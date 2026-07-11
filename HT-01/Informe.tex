@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{parskip}
+\usepackage{pgfplots}
+
+\usetikzlibrary{arrows.meta}
+\pgfplotsset{compat=1.18}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  columns=flexible,
+  keepspaces=true,
+  commentstyle=\color{gray}\itshape,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  stringstyle=\color{green!40!black},
+  frame=L,
+  xleftmargin=2em,
+  showstringspaces=false,
+  tabsize=4
+}
+
+\title{\textbf{Hoja de Trabajo 1: Redes Neuronales} \vspace{1em}\\
+  Deep Learning y Sistemas Inteligentes - CC3092}
+\author{José Antonio Mérida Castejón}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Task 1}
+\textit{Responda de forma clara:}
+
+\begin{enumerate}
+
+  \item \textit{Explique con sus propias palabras por que una red neuronal compuesta únicamente de transformaciones lineales, sin funciones de
+    activación no lineales, tiene exactamente la misma capacidad expresiva que un modelo lineal de una sola capa. Su explicación debe incluir
+    el argumento algebráico central.}
+
+  En términos resumidos, la composición de capas lineales resulta en otra capa lineal. Esto quiere decir que no importa cuantas veces multipliquemos
+  la entrada por una matriz de pesos, el resultado seguirá siendo el mismo que multiplicarlo por una única matriz. Además, sin importar cuantos vectores
+  de \textit{bias} sumemos seguiremos obteniendo otro vector de \textit{bias}. Para una demostración más formal consideremos lo siguiente:
+
+  Una capa lineal aplica a la entrada $x \in \mathbb{R}^n$ una transformación de la forma
+  \[
+    f_1(x) = W_1 x + b_1,
+  \]
+  donde $W_1 \in \mathbb{R}^{k \times n}$ es la matriz de pesos y $b_1 \in \mathbb{R}^k$ el \textit{bias}, de modo que $f_1$ va de $\mathbb{R}^n \to \mathbb{R}^k$.
+
+  Ahora, consideremos una segunda capa $f_2: \mathbb{R}^k \to \mathbb{R}^m$, con $W_2 \in \mathbb{R}^{m \times k}$ y $b_2 \in \mathbb{R}^m$:
+  \[
+    f_2(y) = W_2 y + b_2.
+  \]
+  Al componer ambas sin una función de activación de por medio:
+  \[
+    f_2(f_1(x)) = W_2 (W_1 x + b_1) + b_2 = (W_2 W_1)\, x + (W_2 b_1 + b_2).
+  \]
+  El producto $W_2 W_1$ es de nuevo una matriz $W' = W_2 W_1 \in \mathbb{R}^{m \times n}$. De igual forma, $b_1$ es multiplicado por $W_2$,
+  que lo lleva de $\mathbb{R}^k$ a $\mathbb{R}^m$, y al sumarle $b_2$ obtenemos otro vector $W_2 b_1 + b_2 = b' \in \mathbb{R}^m$. Por lo tanto:
+  \[
+    f_2(f_1(x)) = W' x + b',
+  \]
+  que tiene la misma forma que una única capa $f': \mathbb{R}^n \to \mathbb{R}^m$. Repitiendo el argumento, cualquier número de capas colapsa en una sola $W'x + b'$, por lo que la red tiene la misma capacidad expresiva que un modelo lineal de una sola capa.
+
+  \item \textit{Considere una neurona con dos entradas $x_1 = 3$ y $x_2 = -2$, pesos $w_1 = 0.4$ y $w_2 = 0.6$, y sesgo $b = -0.1$. Calcule la
+    preactivación $zy$ y la activación $a = \sigma(z)$. Interprete el resultado, ¿Qué le indica este valor sobre la predicción del modelo?}
+  \[
+    z = w_1 x_1 + w_2 x_2 + b = (0.4)(3) + (0.6)(-2) + (-0.1) = -0.1.
+  \]
+  \[
+    a = \sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 + e^{0.1}} \approx 0.4750.
+  \]
+
+  La activación $a \approx 0.475$ se interpreta como la probabilidad estimada de que la entrada pertenezca a la clase positiva, es decir,
+  $P(y = 1 \mid x) \approx 0.475$. Como este valor está apenas por debajo de $0.5$, el modelo predice la clase negativa (\textit{no}), pero por un
+  margen muy pequeño.
+
+\end{enumerate}
+
+
+\end{document}
