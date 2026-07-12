@@ -42,7 +42,7 @@
 \section*{Task 1}
 \textit{Responda de forma clara:}
 
-\begin{enumerate}
+\begin{enumerate}[label=\alph*.]
 
   \item \textit{Explique con sus propias palabras por que una red neuronal compuesta únicamente de transformaciones lineales, sin funciones de
     activación no lineales, tiene exactamente la misma capacidad expresiva que un modelo lineal de una sola capa. Su explicación debe incluir
@@ -84,9 +84,40 @@
 
   La activación $a \approx 0.475$ se interpreta como la probabilidad estimada de que la entrada pertenezca a la clase positiva, es decir,
   $P(y = 1 \mid x) \approx 0.475$. Como este valor está apenas por debajo de $0.5$, el modelo predice la clase negativa (\textit{no}), pero por un
-  margen muy pequeño.
+  margen muy pequeño. Esto nos indica que es un \textit{sample} que realmente no es muy parecido a alguna de las clases del conjunto de entrenamiento
+  y el modelo no ``está muy seguro'' de la predicción realizada.
 
 \end{enumerate}
 
+\section*{Task 2}
+Responda de forma clara y deje evidencia de sus cálculos:
+
+\begin{enumerate}[label=\alph*.]
+  \item \textit{Muestre paso a paso como se obtiene la fórmula de entropía cruzada binaria a partir del principio de máxima verosimilitud bajo una distribución
+    de Bernoulli. Indique claramente en que paso se aplica el logaritmo y por qué eso es válido.}
+
+  \item \textit{Para un mismo ejemplo de entrenamiento con etiqueta $y=0$, calcule la pérdida $\mathcal{L}$ cuando el modelo predice
+    $\hat{y} = 0.1, \hat{y} = 0.5$ y $\hat{y} = 0.9$. ¿Qué observa sobre el comportamiento de la pérdida a medida que la predicción
+    se aleja de la etiqueta correcta?¿Es ese comportamiento deseable en un sistema de clasificación?}
+
+  \item \textit{Un ingeniero propone usar error cuadrático medio en lugar de entropía cruzada para entrenar la regresión logística. Formule un
+    argumento técnico concreto contra esa decisión.}
+\end{enumerate}
+
+\section*{Task 3}
+
+\begin{enumerate}[label=\alph*.]
+  \item \textit{Dado el grafo de cómputo de la regresión logística:
+    \[
+      x \rightarrow z = w^{T}x + b \rightarrow \hat{y} = \sigma(z) \rightarrow \mathcal{L}(\hat{y},y)
+    \]
+    Derive $\frac{\partial \mathcal{L}}{\partial w}$ paso a paso usando la regla de la cadena. Identifique en que paso aparece el
+    resultado $\hat{y} - y$ y explique por que ese resultado es matemáticamente conveniente para el entrenamiento.}
+
+  \item \textit{Utilizando el script de Python proporcionado como recurso complementario de la semana, ejecute el entrenamiento y
+    reporte: el valor del costo $J$ en la época 0, en la época 250 y en la época final. Grafique la curva de costo en función de las
+    épocas. Incluya la gráfica como imagen en su entrega e interprete brevemente lo que muestra sobre la convergencia del modelo.}
+
+\end{enumerate}
 
 \end{document}
