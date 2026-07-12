@@ -11,6 +11,8 @@
 \usepackage{xcolor}
 \usepackage{parskip}
 \usepackage{pgfplots}
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{referencias.bib}
 
 \usetikzlibrary{arrows.meta}
 \pgfplotsset{compat=1.18}
@@ -96,12 +98,74 @@ Responda de forma clara y deje evidencia de sus cálculos:
   \item \textit{Muestre paso a paso como se obtiene la fórmula de entropía cruzada binaria a partir del principio de máxima verosimilitud bajo una distribución
     de Bernoulli. Indique claramente en que paso se aplica el logaritmo y por qué eso es válido.}
 
+    Para una clasificación binaria, se cuenta con labels $y \in \{0,1\}$ y predicciones probabilísticas $\hat{y} \in (0,1)$. La distribución
+    de Bernoulli nos indica lo siguiente:
+    \[
+      P(y \mid \hat{y}) = \hat{y}^{y} (1-\hat{y})^{1-y}
+    \]
+    Es decir, la probabilidad es $\hat{y}$ si $y = 1$ y $1 - \hat{y}$ si $y = 0$. Para un conjunto de $N$ muestras independientes, la función 
+    de \textit{likelihood} ($L$) se define como el producto de probabilidades de cada observación individual dado que para dos eventos independientes
+    $P(A \cap B) = P(A) \times P(B)$:
+    \[
+      L = \prod_{i=1}^{N} P(y_i \mid \hat{y}_i) = \prod_{i=1}^{N} \hat{y}_i^{y_i} (1 - \hat{y}_i)^{1 - y_i}
+    \]
+    Entonces, el principio de \textit{maximum likelihood} busca maximizar esta función. Ahora, por conveniencia (poder trabajar con sumatorias, evitar
+    underflow, gradiente más manejable, etc.) podemos aplicar la función de logaritmo natural a cada una de las probabilidades. Dado que el logaritmo
+    es una función estrictamente creciente, los parámetros que maximizan $L$ son exactamente los mismos que maximizan $\log L$. Entonces, tenemos que:
+    \[
+      \log L = \log{\left(\prod_{i=1}^{N} \hat{y}_i^{y_i} (1 - \hat{y}_i)^{1 - y_i}\right)}
+    \]
+    Dado que $\log (ab) = \log a + \log b$ y $\log(a^b) = b \log a$ podemos reescribir $\log L$ como una sumatoria:
+    \[
+      \log L = \sum_{i=1}^{N} (y_i \log{(\hat{y}_i)} + (1 - y_i) \log(1 - \hat{y}_i))
+    \]
+    Ahora, como la convención es minimizar una función de pérdida simplemente podemos multiplicar la función por $-1$ y los parámetros que la minimizan 
+    son los mismos que maximizan la función original. Adicionalmente, buscamos el error promedio por sample y por lo tanto dividimos el resultado dentro
+    de $N$. Resultando la función de \textit{binary cross-entropy}:
+    \[
+      \mathcal{L} = -\frac{1}{N}\sum_{i=1}^{N} (y_i \log{(\hat{y}_i)} + (1 - y_i) \log(1 - \hat{y}_i))
+    \]
+
+
   \item \textit{Para un mismo ejemplo de entrenamiento con etiqueta $y=0$, calcule la pérdida $\mathcal{L}$ cuando el modelo predice
     $\hat{y} = 0.1, \hat{y} = 0.5$ y $\hat{y} = 0.9$. ¿Qué observa sobre el comportamiento de la pérdida a medida que la predicción
     se aleja de la etiqueta correcta?¿Es ese comportamiento deseable en un sistema de clasificación?}
 
-  \item \textit{Un ingeniero propone usar error cuadrático medio en lugar de entropía cruzada para entrenar la regresión logística. Formule un
-    argumento técnico concreto contra esa decisión.}
+    Dado que la etiqueta real es $y=0$, la fórmula general de la pérdida es la siguiente:
+    \[
+      \mathcal{L} = -\log(1 - \hat{y})
+    \]
+    Calculando las pérdidas:
+    \begin{itemize}
+      \item Para $\hat{y} = 0.1$: $\mathcal{L} = -\log(1 - 0.1) = -\log(0.9) \approx 0.105$
+      \item Para $\hat{y} = 0.5$: $\mathcal{L} = -\log(1 - 0.5) = -\log(0.5) \approx 0.693$
+      \item Para $\hat{y} = 0.9$: $\mathcal{L} = -\log(1 - 0.9) = -\log(0.1) \approx 2.303$
+    \end{itemize}
+    A medida que la predicción $\hat{y}$ se aleja de la etiqueta correcta $y=0$, el valor de la pérdida crece de manera drástica y no lineal. Esto
+    significa que la función penaliza con mucha mayor severidad a las predicciones que están más alejadas de la realidad. Esta dinámica coincide con
+    lo descrito en un artículo consultado~\cite{godoy2018bce}, donde se señala que este efecto de penalización es una de las razones para integrar
+    logaritmos en la función de pérdida.
+
+    Este comportamiento es altamente deseable en un sistema de clasificación. Durante el entrenamiento, nos interesa castigar de forma estricta
+    al modelo cuando genera predicciones \textit{confidently wrong}. A nivel de optimización, la prioridad es corregir rápidamente los casos donde
+    la red está más confundida y segura de su error (como predecir $\hat{y} = 0.9$ cuando $y = 0$), obligándola a ajustar sus parámetros más
+    drásticamente debido a la magnitud del error.
+
+  \item \textit{Un ingeniero propone usar error cuadrático medio en lugar de entropía cruzada para entrenar la regresión logística. Formule un argumento
+    técnico concreto contra esa decisión.}
+
+    \textit{Nota: Tuvimos una pregunta similar en un laboratorio en el curso de Inteligencia Artificial, la cita hace referencia hacia mi
+      propio informe de laboratorio por temas de brevedad.}
+
+    El uso del \textit{Mean Squared Error} (MSE) en regresión logística presenta un problema de optimización. Dado que la función sigmoide introduce
+    una ecuación trascendental, el MSE carece de una solución de forma cerrada y nos vemos obligados a utilizar métodos iterativos como el descenso
+    de gradiente~\cite{merida2026lab02}. 
+
+    Para que el descenso de gradiente garantice encontrar la solución óptima, requiere operar sobre una función convexa. Al aplicar MSE sobre las
+    salidas de una función sigmoide tenemos una superficie de pérdida no convexa, introduciendo múltiples mínimos locales y puntos silla
+    donde la gradiente desvanece~\cite{merida2026lab02}. Esto causa que el optimizador se quede atascado. Por el contrario, la entropía
+    cruzada mantiene es estrictamente convexa en tareas de clasificación, garantizando la convergencia hacia el único mínimo global.
+
 \end{enumerate}
 
 \section*{Task 3}
@@ -119,5 +183,7 @@ Responda de forma clara y deje evidencia de sus cálculos:
     épocas. Incluya la gráfica como imagen en su entrega e interprete brevemente lo que muestra sobre la convergencia del modelo.}
 
 \end{enumerate}
+
+\printbibliography
 
 \end{document}
