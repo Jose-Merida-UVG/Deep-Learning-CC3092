@@ -165,7 +165,7 @@ Responda de forma clara y deje evidencia de sus cálculos:
     Para que el descenso de gradiente garantice encontrar la solución óptima, requiere operar sobre una función convexa. Al aplicar MSE sobre las
     salidas de una función sigmoide tenemos una superficie de pérdida no convexa, introduciendo múltiples mínimos locales y puntos silla
     donde la gradiente desvanece~\cite{merida2026lab02}. Esto causa que el optimizador se quede atascado. Por el contrario, la entropía
-    cruzada mantiene es estrictamente convexa en tareas de clasificación, garantizando la convergencia hacia el único mínimo global.
+    cruzada se mantiene convexa en tareas de clasificación, garantizando la convergencia hacia el mínimo global.
 
     Adicionalmente, las gradientes resultantes al utilizar MSE son sumamente pequeñas. Esto hace que el optimizador sea aún más propenso a atascarse
     en algún punto relativamente plano sobre la superficie.

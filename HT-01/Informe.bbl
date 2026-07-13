@@ -1,0 +1,117 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{godoy2018bce}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=07b2be569b0ad2a69e35f437bcd66dba}{%
+           family={Godoy},
+           familyi={G\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \strng{fullhash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \strng{bibnamehash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \strng{authorbibnamehash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \strng{authornamehash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \strng{authorfullhash}{07b2be569b0ad2a69e35f437bcd66dba}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{Towards Data Science}
+      \field{title}{Understanding binary cross-entropy / log loss: a visual explanation}
+      \field{year}{2018}
+      \verb{urlraw}
+      \verb https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a/
+      \endverb
+      \verb{url}
+      \verb https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a/
+      \endverb
+    \endentry
+    \entry{merida2026lab02}{report}{}
+      \name{author}{1}{}{%
+        {{hash=2d4de602faab4aec408cfe87609993e5}{%
+           family={Mérida\bibnamedelima Castejón},
+           familyi={M\bibinitperiod\bibinitdelim C\bibinitperiod},
+           given={José\bibnamedelima Antonio},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Inteligencia Artificial - CC3085, Universidad del Valle de Guatemala}%
+      }
+      \strng{namehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{fullhash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{bibnamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authorbibnamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authornamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authorfullhash}{2d4de602faab4aec408cfe87609993e5}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Laboratorio 2}
+      \field{type}{Informe de laboratorio}
+      \field{year}{2026}
+      \verb{urlraw}
+      \verb https://github.com/Jose-Merida-UVG/Artificial-Intelligence-CC3085/blob/main/Lab-02/Informe.pdf
+      \endverb
+      \verb{url}
+      \verb https://github.com/Jose-Merida-UVG/Artificial-Intelligence-CC3085/blob/main/Lab-02/Informe.pdf
+      \endverb
+    \endentry
+    \entry{merida2026lab04}{report}{}
+      \name{author}{1}{}{%
+        {{hash=2d4de602faab4aec408cfe87609993e5}{%
+           family={Mérida\bibnamedelima Castejón},
+           familyi={M\bibinitperiod\bibinitdelim C\bibinitperiod},
+           given={José\bibnamedelima Antonio},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Inteligencia Artificial - CC3085, Universidad del Valle de Guatemala}%
+      }
+      \strng{namehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{fullhash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{bibnamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authorbibnamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authornamehash}{2d4de602faab4aec408cfe87609993e5}
+      \strng{authorfullhash}{2d4de602faab4aec408cfe87609993e5}
+      \field{extraname}{2}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Laboratorio 4}
+      \field{type}{Informe de laboratorio}
+      \field{year}{2026}
+      \verb{urlraw}
+      \verb https://github.com/Jose-Merida-UVG/Artificial-Intelligence-CC3085/blob/main/Lab-04/Informe.pdf
+      \endverb
+      \verb{url}
+      \verb https://github.com/Jose-Merida-UVG/Artificial-Intelligence-CC3085/blob/main/Lab-04/Informe.pdf
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

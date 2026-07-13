@@ -20,4 +20,6 @@ Pending
 
 ### Hojas de Trabajo
 
-Pending
+| Assignment | Topic | Link | Description |
+| :--------- | :---- | :--- | :---------- |
+| **HT-01** | Neural Network Foundations | [View Folder](./HT-01/) | Theoretical proof that stacked linear layers collapse into a single linear model, derivation of binary cross-entropy from maximum likelihood, manual chain-rule backpropagation for logistic regression, and a from-scratch NumPy logistic regression trained via gradient descent. |
