@@ -11,6 +11,7 @@
 \usepackage{xcolor}
 \usepackage{parskip}
 \usepackage{pgfplots}
+\usepackage{graphicx}
 \usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
 \addbibresource{referencias.bib}
 
@@ -85,9 +86,9 @@
   \]
 
   La activación $a \approx 0.475$ se interpreta como la probabilidad estimada de que la entrada pertenezca a la clase positiva, es decir,
-  $P(y = 1 \mid x) \approx 0.475$. Como este valor está apenas por debajo de $0.5$, el modelo predice la clase negativa (\textit{no}), pero por un
+  $P(y = 1 \mid x) \approx 0.475$. Como este valor está apenas por debajo de $0.5$, el modelo predice la clase negativa, pero por un
   margen muy pequeño. Esto nos indica que es un \textit{sample} que realmente no es muy parecido a alguna de las clases del conjunto de entrenamiento
-  y el modelo no ``está muy seguro'' de la predicción realizada.
+  y el modelo no ``está muy seguro'' de la predicción realizada. 
 
 \end{enumerate}
 
@@ -166,6 +167,8 @@ Responda de forma clara y deje evidencia de sus cálculos:
     donde la gradiente desvanece~\cite{merida2026lab02}. Esto causa que el optimizador se quede atascado. Por el contrario, la entropía
     cruzada mantiene es estrictamente convexa en tareas de clasificación, garantizando la convergencia hacia el único mínimo global.
 
+    Adicionalmente, las gradientes resultantes al utilizar MSE son sumamente pequeñas. Esto hace que el optimizador sea aún más propenso a atascarse
+    en algún punto relativamente plano sobre la superficie.
 \end{enumerate}
 
 \section*{Task 3}
@@ -178,11 +181,76 @@ Responda de forma clara y deje evidencia de sus cálculos:
     Derive $\frac{\partial \mathcal{L}}{\partial w}$ paso a paso usando la regla de la cadena. Identifique en que paso aparece el
     resultado $\hat{y} - y$ y explique por que ese resultado es matemáticamente conveniente para el entrenamiento.}
 
+    El grafo de cómputo tiene tres pasos: $z = w^T x + b$, $\hat{y} = \sigma(z)$ y $\mathcal{L}(\hat{y}, y)$, donde $\mathcal{L}$ es la
+    entropía cruzada binaria:
+    \[
+      \mathcal{L}(\hat{y}, y) = -\left(y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right).
+    \]
+    Como $w$ solo afecta a $\mathcal{L}$ de forma indirecta (primero a través de $z$, y $z$ a su vez a través de $\hat{y}$), la regla de la
+    cadena nos dice que basta con multiplicar las derivadas parciales de cada paso del grafo:
+    \[
+      \frac{\partial \mathcal{L}}{\partial w} = \frac{\partial \mathcal{L}}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial z} \cdot \frac{\partial z}{\partial w}.
+    \]
+    Derivando la entropía cruzada respecto a $\hat{y}$:
+    \[
+      \frac{\partial \mathcal{L}}{\partial \hat{y}} = \frac{\hat{y} - y}{\hat{y}(1-\hat{y})}.
+    \]
+    Y derivando la sigmoide respecto a $z$:
+    \[
+      \frac{\partial \hat{y}}{\partial z} = \hat{y}(1-\hat{y}).
+    \]
+    Al multiplicar ambas, el término $\hat{y}(1-\hat{y})$ se cancela y queda simplemente:
+    \[
+      \frac{\partial \mathcal{L}}{\partial z} = \hat{y} - y.
+    \]
+    Aquí es donde aparece el resultado $\hat{y} - y$. Falta un último paso, $\dfrac{\partial z}{\partial w} = x$ (directo de $z = w^Tx + b$),
+    así que el gradiente completo es:
+      \[
+      \frac{\partial \mathcal{L}}{\partial w} = (\hat{y} - y)\, x.
+    \]
+    Este resultado es matemáticamente conveniente por dos razones principales. Primero, evita el problema del \textit{vanishing gradient}, donde el
+    gradiente se vuelve tan pequeño que el optimizador no logra actualizar los pesos para mejorar el modelo. Normalmente, la función sigmoide causa
+    este problema porque su derivada es muy pequeña (0.25 como máximo, tendiendo a 0 en los extremos). Cabe destacar que esta cancelación beneficiosa
+    ocurre únicamente en la capa de salida; al utilizar varias capas ocultas con activación sigmoide, el desvanecimiento del gradiente
+    reaparece~\cite{merida2026lab04}. Segundo, calcular el gradiente resultante se vuelve computacionalmente barato y es directamente proporcional
+    al error.
+
   \item \textit{Utilizando el script de Python proporcionado como recurso complementario de la semana, ejecute el entrenamiento y
     reporte: el valor del costo $J$ en la época 0, en la época 250 y en la época final. Grafique la curva de costo en función de las
     épocas. Incluya la gráfica como imagen en su entrega e interprete brevemente lo que muestra sobre la convergencia del modelo.}
 
+    \begin{itemize}
+      \item Época 0: $J = 0.693147$
+      \item Época 250: $J = 0.275725$
+      \item Época final: $J = 0.248261$
+    \end{itemize}
+
+    \begin{figure}[h]
+      \centering
+      \includegraphics[width=0.7\textwidth]{figs/loss.png}
+      \caption{Curva de costo $J$ en función de las épocas.}
+    \end{figure}
+
+    La curva muestra una caída pronunciada durante las primeras $\sim$50-100 épocas, pasando de $J \approx 0.69$ a valores cercanos a $0.3$. A
+    partir de ahí la pérdida sigue disminuyendo pero de forma cada vez más lenta, aplanándose conforme se acerca a la época final ($J \approx 0.248$).
+    Este comportamiento es característico de la convergencia del descenso de gradiente. Al inicio los pesos están lejos del óptimo (prácticamente 
+    predicciones aleatorias) y el gradiente es grande, por lo que las actualizaciones son grandes. A medida que el modelo se acerca a un mínimo
+    el gradiente se reduce y las actualizaciones se vuelven más pequeñas. Que la curva sea estricamente decreciente y no oscile sugiere que la
+    tasa de aprendizaje utilizada es adecuada para este problema. En conclusión, la gráfica de la curva de pérdida evidencia que el modelo
+    logró converger de manera adecuada.
+
+    \textbf{Uso de IA:} Se utilizó un LLM para generar la gráfica utilizando Matplotlib, luego de haber modificado el código para que la pérdida
+    de cada época se fuera registrando se utilizó el siguiente prompt:
+
+    ``I've got the training of an ML model using gradient descent saved in the costos array, index indicates epoch and value at index indicates loss. I
+    need to graph the loss curve as well as specific points in epochs 0, 250 and 500.''
+
+    El prompt funciona porque se le dió una explicación detallada al LLM de lo que tenía que llevar a cabo. Además, se le dió una tarea bastante delimitada
+    al proporcionarle el array anterior a la instrucción.
+
 \end{enumerate}
+
+\newpage
 
 \printbibliography
 
