@@ -16,7 +16,9 @@ This repository hosts the academic assignments and projects for the **Deep Learn
 
 ### Labs
 
-Pending
+| Assignment | Topic | Link | Description |
+| :--------- | :---- | :--- | :---------- |
+| **Lab-01** | CNN Forward & Backward Pass | [View Folder](./Lab-01/) | From-scratch NumPy implementation of a full CNN pipeline (Conv -> ReLU -> MaxPool -> Dense -> Sigmoid -> BCE), including manual backpropagation through every layer and a verified gradient descent update. |
 
 ### Hojas de Trabajo
 
