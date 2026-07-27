@@ -19,6 +19,7 @@ This repository hosts the academic assignments and projects for the **Deep Learn
 | Assignment | Topic | Link | Description |
 | :--------- | :---- | :--- | :---------- |
 | **Lab-01** | CNN Forward & Backward Pass | [View Folder](./Lab-01/) | From-scratch NumPy implementation of a full CNN pipeline (Conv -> ReLU -> MaxPool -> Dense -> Sigmoid -> BCE), including manual backpropagation through every layer and a verified gradient descent update. |
+| **Lab-02** | LSTM from Scratch (PyTorch) | [View Folder](./Lab-02/) | From-scratch PyTorch implementation of an LSTM (many-to-one sequence classifier), including manual BPTT backpropagation through every gate and a verified 5-iteration convergence check. |
 
 ### Hojas de Trabajo
 
