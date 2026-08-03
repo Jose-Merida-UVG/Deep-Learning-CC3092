@@ -2,12 +2,12 @@
 
 ## Summary
 
-This lab implements a complete convolutional neural network pipeline — `Conv(3x3) + bias -> ReLU -> MaxPool(2x2) -> Flatten -> Dense(9->1) + sigmoid -> BCE Loss` — entirely from scratch in NumPy, covering both the forward pass and the manual backward pass (backpropagation) through every layer. The network is trained for a single gradient descent iteration on one image (digit "0" vs. not) from scikit-learn's `load_digits` dataset.
+Starter notebook (input image, fixed kernel, and verification cells given, not to be modified) where the task was to fill in a convolutional neural network pipeline — `Conv(3x3) + bias -> ReLU -> MaxPool(2x2) -> Flatten -> Dense(9->1) + sigmoid -> BCE Loss` — entirely from scratch in NumPy, covering both the forward pass and the manual backward pass (backpropagation) through every layer. The network is trained for a single gradient descent iteration on one image (digit "0" vs. not) from scikit-learn's `load_digits` dataset.
 
-- **Forward pass**: 2D convolution (stride 1, no padding) over an 8x8 image with a fixed 3x3 diagonal kernel, ReLU activation, 2x2 max pooling with stride 2 (tracking argmax indices for backward), flatten, a dense layer down to a single logit, sigmoid, and binary cross-entropy loss.
-- **Backward pass**: Chain-rule gradients computed in reverse order — dense layer gradients (using the closed-form $\hat{y}-y$ simplification from BCE+sigmoid), backward through flatten and max pooling (gradient routed only to the max index per window), backward through ReLU (masking by the pre-activation sign), and backward through the convolution (gradient w.r.t. kernel and bias accumulated over all sliding-window positions).
-- **Weight update**: One step of vanilla gradient descent ($\alpha = 0.01$) applied to the kernel, conv bias, dense weights, and dense bias, followed by a fresh forward pass verifying the loss decreases.
-- **Analysis questions**: Written discussion connecting the numeric results to underlying concepts — why early predictions are essentially random, what a kernel gradient value means to the optimizer, the "dead ReLU" failure mode, and why max pooling's backward pass differs from average pooling's.
+- **Forward pass (filled in)**: 2D convolution (stride 1, no padding) over an 8x8 image with a fixed 3x3 diagonal kernel, ReLU activation, 2x2 max pooling with stride 2 (tracking argmax indices for backward), flatten, a dense layer down to a single logit, sigmoid, and binary cross-entropy loss.
+- **Backward pass (filled in)**: Chain-rule gradients computed in reverse order — dense layer gradients (using the closed-form $\hat{y}-y$ simplification from BCE+sigmoid), backward through flatten and max pooling (gradient routed only to the max index per window), backward through ReLU (masking by the pre-activation sign), and backward through the convolution (gradient w.r.t. kernel and bias accumulated over all sliding-window positions).
+- **Weight update (filled in)**: One step of vanilla gradient descent ($\alpha = 0.01$) applied to the kernel, conv bias, dense weights, and dense bias, followed by a fresh forward pass verifying the loss decreases.
+- **Analysis questions (given as questions, answers written)**: Discussion connecting the numeric results to underlying concepts — why early predictions are essentially random, what a kernel gradient value means to the optimizer, the "dead ReLU" failure mode, and why max pooling's backward pass differs from average pooling's.
 
 ## Deliverables
 
