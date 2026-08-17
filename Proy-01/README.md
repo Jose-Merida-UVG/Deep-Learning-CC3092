@@ -1,5 +1,8 @@
 # Proyecto 1 — Semana 6: Transformer desde cero
 
+**Artifact:** https://claude.ai/public/artifacts/05c8421e-c929-457f-ab62-f0a9907ff4db (100% AI-generated)
+**Video:** https://youtu.be/ogbKwlHrfCU
+
 ## Summary
 
 Group project (8% of course grade) implementing a Transformer Encoder and a decoder-only Mini-GPT from raw PyTorch tensors (`nn.Parameter` + `torch.optim.Adam` allowed, but no `nn.MultiheadAttention`/`nn.TransformerEncoder` or other high-level architecture layers), plus an interactive visualization artifact and a 3-minute video. Both models share `layer_norm` and the multi-head attention logic; the Mini-GPT reuses the encoder's building blocks but adds a causal mask and swaps the CLS classifier head for a full vocabulary projection.
@@ -25,8 +28,7 @@ Group project (8% of course grade) implementing a Transformer Encoder and a deco
 - **Part 1 verification**: forward pass produces the expected `[2]` logits and `[2, 16, 16]` attention shapes, attention rows sum to 1.0, and initial loss ≈ 1.46 (close to the untrained baseline). Trained for 25 epochs, reaching **66.00% dev accuracy** (train accuracy ~98.7% by epoch 12) — passes the ≥60% autograder threshold.
 - **Part 2 verification**: causal mask confirmed correct (row 0 attends only to position 0, row 1 to positions 0–1, etc.; all future positions are exactly 0). Trained for 50 epochs, loss going **4.3562 → 1.0082** (a >75% reduction, well past the ≥15% autograder threshold). Sample generations at temperature 0.8 show short locally-plausible fragments heavily peppered with `<UNK>`, reflecting the tiny corpus.
 - **Automatic grading cell**: reports **65/65** on the code section — Part 1 (40/40, dev_acc=66.00%) and Part 2 (25/25, loss 4.3562→1.0082) — with Parts 3 (artifact, 15 pts) and 4 (video, 20 pts) left for manual grading.
-- **Artifact**: published at https://claude.ai/public/artifacts/05c8421e-c929-457f-ab62-f0a9907ff4db — **100% AI-generated**, built with Claude from the exported weights and technical details, with all inference logic reimplemented in JavaScript.
-- **Video**: https://youtu.be/ogbKwlHrfCU
+- **Artifact**: built with Claude from the exported weights and technical details, with all inference logic reimplemented in JavaScript.
 
 ## AI Usage
 
