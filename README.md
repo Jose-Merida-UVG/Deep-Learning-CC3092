@@ -23,6 +23,7 @@ Most labs are starter notebooks provided by the course (corpus/data, initial wei
 | **Lab-01** | CNN Forward & Backward Pass | [View Folder](./Lab-01/) | Filled in a from-scratch NumPy CNN pipeline (Conv -> ReLU -> MaxPool -> Dense -> Sigmoid -> BCE) on a provided starter notebook: forward pass, manual backpropagation through every layer, and a single verified gradient descent update. |
 | **Lab-02** | LSTM from Scratch (PyTorch) | [View Folder](./Lab-02/) | Filled in a from-scratch PyTorch LSTM (many-to-one sequence classifier) on a provided starter notebook: forward pass, manual BPTT backpropagation through every gate, and a verified 5-iteration convergence check. |
 | **Lab-03** | Seq2Seq (Encoder-Decoder LSTM) | [View Folder](./Lab-03/) | Filled in a from-scratch PyTorch Encoder-Decoder LSTM on a provided starter notebook (EN->ES translation with intentionally mismatched sentence lengths): forward pass, manual BPTT through both encoder and decoder, sparse vs. dense embedding-gradient comparison, and a 5-iteration training loop with greedy decoding. |
+| **Lab-05** | Losses, Regularization & Optimizers | [View Folder](./Lab-05/) | Filled in manual loss functions (CE, BCE, MSE, MAE, Huber) and optimizers (SGD, SGD+momentum) with raw PyTorch tensors on a provided starter notebook with fixed architectures, plus L2/Dropout/early-stopping regularization experiments on a deliberately overfit-prone model. |
 
 ### Hojas de Trabajo
 
