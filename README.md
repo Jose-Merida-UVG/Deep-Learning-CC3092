@@ -23,10 +23,19 @@ Most labs are starter notebooks provided by the course (corpus/data, initial wei
 | **Lab-01** | CNN Forward & Backward Pass | [View Folder](./Lab-01/) | Filled in a from-scratch NumPy CNN pipeline (Conv -> ReLU -> MaxPool -> Dense -> Sigmoid -> BCE) on a provided starter notebook: forward pass, manual backpropagation through every layer, and a single verified gradient descent update. |
 | **Lab-02** | LSTM from Scratch (PyTorch) | [View Folder](./Lab-02/) | Filled in a from-scratch PyTorch LSTM (many-to-one sequence classifier) on a provided starter notebook: forward pass, manual BPTT backpropagation through every gate, and a verified 5-iteration convergence check. |
 | **Lab-03** | Seq2Seq (Encoder-Decoder LSTM) | [View Folder](./Lab-03/) | Filled in a from-scratch PyTorch Encoder-Decoder LSTM on a provided starter notebook (EN->ES translation with intentionally mismatched sentence lengths): forward pass, manual BPTT through both encoder and decoder, sparse vs. dense embedding-gradient comparison, and a 5-iteration training loop with greedy decoding. |
+| **Lab-04** | Attention Mechanism from Scratch | [View Folder](./Lab-04/) | Filled in scaled dot-product attention on top of the Week-4 Seq2Seq in a provided starter notebook (Q/K/V projections, dynamic context vector, manual backward through both the value and softmax/score routes), plus a with- vs. without-attention convergence comparison and an attention-map visualization. |
 | **Lab-05** | Losses, Regularization & Optimizers | [View Folder](./Lab-05/) | Filled in manual loss functions (CE, BCE, MSE, MAE, Huber) and optimizers (SGD, SGD+momentum) with raw PyTorch tensors on a provided starter notebook with fixed architectures, plus L2/Dropout/early-stopping regularization experiments on a deliberately overfit-prone model. |
+| **Lab-06** | Transfer Learning & Fine-Tuning | [View Folder](./Lab-06/) | Adapted ImageNet-pretrained ResNet-18 to CIFAR-10 on a provided starter notebook, filling in three transfer-learning strategies (frozen-backbone feature extraction, partial fine-tuning of `layer4`, and full fine-tuning with per-depth differential learning rates) plus an embedding-separability and PCA analysis of the representations each one learns. |
 
 ### Hojas de Trabajo
 
 | Assignment | Topic | Link | Description |
 | :--------- | :---- | :--- | :---------- |
 | **HT-01** | Neural Network Foundations | [View Folder](./HT-01/) | Written derivations (linear-layer collapse, binary cross-entropy from maximum likelihood, chain-rule backpropagation for logistic regression) plus a from-scratch NumPy logistic regression trained via gradient descent. |
+| **HT-02** | GANs (DCGAN, Mode Collapse, TTUR) | [View Folder](./HT-02/) | A DCGAN built from scratch in PyTorch to generate 64x64 Pokémon sprites following Radford et al. (2015), followed by a deliberately induced mode collapse (with the gradient math behind it), an empirical Jensen-Shannon divergence estimate per epoch, and an application of the Two Time-Scale Update Rule from Heusel et al. (2017). |
+
+### Proyectos
+
+| Assignment | Topic | Link | Description |
+| :--------- | :---- | :--- | :---------- |
+| **Proy-01** | Transformer from Scratch | [View Folder](./Proy-01/) | Group project implementing a Transformer Encoder and a decoder-only Mini-GPT from raw PyTorch tensors (no `nn.MultiheadAttention` or other high-level architecture layers), trained on SST-2, plus an interactive HTML artifact reimplementing both models' inference in JavaScript and a 3-minute video. |

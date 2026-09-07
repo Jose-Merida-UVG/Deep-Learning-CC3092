@@ -1,3 +1,4 @@
 .tex/
 .venv/
 __pycache__/
+data/
