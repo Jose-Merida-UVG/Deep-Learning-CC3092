@@ -2,3 +2,5 @@
 .venv/
 __pycache__/
 data/
+*.csv
+Proy-02/aml_outputs/
