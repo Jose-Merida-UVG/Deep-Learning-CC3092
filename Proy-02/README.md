@@ -14,7 +14,7 @@ Sistema de dos etapas que ordena a los remitentes de una remesadora según qué 
 
 ## Datos
 
-IBM AML (HI-Small), un conjunto sintético con 5,078,345 transacciones. Solo se usan `HI-Small_Trans.csv` y `HI-Small_Patterns.txt`, disponibles en https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+IBM AML (HI-Small), un conjunto sintético con 5,078,345 transacciones. Se usa la variante HI-Small completa, sin submuestreo adicional. Es suficiente para entrenar, con más de cinco millones de transacciones y 3,376 remitentes que lavan en algún momento. Solo se usan `HI-Small_Trans.csv` y `HI-Small_Patterns.txt`, disponibles en https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
 
 Cada remitente se divide en ventanas de 32 transacciones. La división es 70/15/15 por remitente, para que ventanas solapadas no queden en conjuntos distintos.
 

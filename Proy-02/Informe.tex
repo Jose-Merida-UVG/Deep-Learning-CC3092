@@ -62,7 +62,7 @@ Este proyecto propone un sistema que ordena a los remitentes por nivel de riesgo
 
 \section{Datos y construcción de secuencias}
 
-Se usó IBM AML (HI-Small) \cite{altman2023}, y no PaySim, porque simula bancos, personas y empresas con lavado inyectado en patrones conocidos. Además, sus remitentes tienen historia repetida, que es lo que necesita un modelo de secuencias. Contiene cerca de 497 mil remitentes, y menos del 1\% de ellos lava en algún momento.
+Se usó IBM AML (HI-Small) \cite{altman2023}, y no PaySim, porque simula bancos, personas y empresas con lavado inyectado en patrones conocidos. Además, sus remitentes tienen historia repetida, que es lo que necesita un modelo de secuencias. Se usó la variante HI-Small completa, sin submuestreo adicional. Es suficiente para entrenar, con más de cinco millones de transacciones y cerca de 497 mil remitentes, de los cuales 3,376 lavan en algún momento.
 
 Antes de modelar, el análisis exploratorio dejó cuatro hallazgos que se volvieron decisiones.
 \begin{itemize}
@@ -149,7 +149,7 @@ La Etapa B es un clasificador. Recibe una ventana y calcula la probabilidad de q
 
 \subsection{Métricas}
 
-Con tan pocos casos de lavado, la exactitud no sirve, porque un modelo que nunca alerta acertaría el 99.9\% de las veces. La métrica de selección es el PR-AUC, que resume la calidad del ranking completo de remitentes. Un ranking aleatorio da 0.009 y uno perfecto da 1. Para el negocio se reportan dos medidas. El \textbf{recall al 5\%} es la fracción de los lavadores que se encuentra al revisar el 5\% de remitentes más riesgosos. La \textbf{precisión} es la fracción de las alertas que son reales, y se mide en las 100 alertas más altas y en el 5\% completo. Todo se calcula por remitente, que es la unidad que recibe una alerta. Los intervalos de confianza del 95\% se calculan con bootstrap, que repite la evaluación sobre muestras al azar y da un rango razonable para cada cifra.
+Con tan pocos casos de lavado, la exactitud no sirve, porque un modelo que nunca alerta acertaría el 99.9\% de las veces. La métrica de selección es el PR-AUC, que resume la calidad del ranking completo de remitentes. Un ranking aleatorio da 0.009 y uno perfecto da 1. Para el negocio se reportan dos medidas. El \textbf{recall al 5\%} es la fracción de los lavadores que se encuentra al revisar el 5\% de remitentes más riesgosos. La \textbf{precisión} es la fracción de las alertas que son reales, y se mide en las 100 alertas más altas y en el 5\% completo. Todo se calcula por remitente, que es la unidad que recibe una alerta. Los intervalos de confianza del 95\% se calculan con bootstrap, que repite la evaluación sobre muestras al azar.
 
 \section{Resultados del experimento de ablación}
 
@@ -218,7 +218,7 @@ El modelo final es el \textbf{Transformer ajustado}. Su resultado es prácticame
 
 \section{Interpretabilidad y análisis de casos}
 
-El modelo final asigna un peso de atención a cada transacción. Esos pesos indican en qué transacciones se fijó el modelo, pero no garantizan por sí solos una explicación fiel \cite{jain2019}. Como el conjunto de datos marca cuáles transacciones son lavado, se puede medir si la atención cae sobre ellas, y compararla con el error de reconstrucción de la Etapa A. Entre los 381 remitentes positivos detectados, la transacción con más atención es de lavado el 67\% de las veces, y al azar sería el 23\%. La transacción con mayor error de la Etapa A es de lavado el 72\% de las veces. Ambas señales sirven como explicación.
+El modelo final asigna un peso de atención a cada transacción. Esos pesos indican en qué transacciones se fijó el modelo, pero no garantizan por sí solos una explicación fiel \cite{jain2019}. Como el conjunto de datos marca cuáles transacciones son lavado, se puede medir si la atención cae sobre ellas, y compararla con el error de reconstrucción de la Etapa A. Entre los 381 remitentes positivos detectados, la transacción con más atención es de lavado el 67\% de las veces, y al azar sería el 23\%. La transacción con mayor error de la Etapa A es de lavado el 72\% de las veces.
 
 \begin{table}[H]
 \centering
@@ -296,12 +296,12 @@ Se analizaron cinco casos del conjunto de prueba, elegidos automáticamente. Son
   \item Los datos son sintéticos y tienen artefactos del simulador. Los resultados no se pueden extrapolar a remesas reales ni a su tasa de lavado.
   \item El modelo ve a cada remitente por separado, pero el lavado es un fenómeno de red. Detecta la mayoría de los patrones conocidos, pero no el lavado sin tipología. Los remitentes con una sola transacción (31\%) quedan fuera del alcance.
   \item El preentrenamiento no mejoró el resultado de forma consistente. Habría que probar otro objetivo de preentrenamiento.
-  \item Cada modelo se entrenó una sola vez, y los resultados cambian un poco entre corridas. Por eso no se puede separar un efecto real del ruido. Repetir con varias semillas aleatorias lo aclararía.
+  \item Cada modelo se entrenó una sola vez, y los resultados cambian un poco entre corridas. Por eso no se puede separar un efecto real del ruido.
 \end{itemize}
 
 \textbf{Para llevarlo a producción en una remesadora.}
 \begin{itemize}
-  \item \textbf{Datos reales etiquetados.} Por ejemplo, los reportes de operaciones sospechosas. Son incompletos y tardan en llegar.
+  \item \textbf{Datos reales etiquetados.} Por ejemplo, los reportes de operaciones sospechosas.
   \item \textbf{Calibración y umbrales.} Las probabilidades del modelo no están calibradas, porque el entrenamiento usó pocos negativos. Calibrar significa ajustarlas a la frecuencia real de lavado. El umbral debe fijarse con la capacidad real de revisión y con el reglamento del Decreto 15-2026.
   \item \textbf{Monitoreo y reentrenamiento.} Se debe vigilar el volumen de alertas, los cambios en los datos y la proporción de alertas reales, y reentrenar de forma periódica.
   \item \textbf{Revisión humana y gobierno del modelo.} Cada alerta pasa por un analista con la explicación a la vista, y queda registrada para auditoría.
