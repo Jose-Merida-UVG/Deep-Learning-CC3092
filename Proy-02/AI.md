@@ -27,7 +27,7 @@ Lo que cambia respecto a escribir el código yo mismo es dónde pongo la atenci�
 
 Mías: usar un autoencoder encoder-decoder para la Etapa A; agregar un MLP como baseline; comparar LSTM y Transformer en las dos etapas; fijar el umbral en el 5% de remitentes alertados porque es en lo que se basa el análisis de negocio; cuestionar el umbral de mejor F1 que se había implementado; recortar gráficas y métricas del notebook; interpretar los resultados y plantear las hipótesis sobre ellos (por qué el MLP gana en la Etapa A y por qué el preentrenamiento no ayudó); revisar el análisis de los casos y decidir cómo presentarlos; y el formato del reporte y de la documentación, que seguí del enunciado.
 
-De la IA: la implementación, las pruebas, la redacción del notebook y del borrador del reporte, y el demo web (incluida la traducción de los dos modelos a JavaScript, que se verificó contra las salidas de PyTorch). 
+De la IA: la implementación, las pruebas, la redacción y borradores del reporte y notebook (verificados detenidamente y modificados), y el demo web (incluida la traducción de los dos modelos a JavaScript, que se verificó contra las salidas de PyTorch). 
 
 ## Cómo verifiqué lo que hizo
 

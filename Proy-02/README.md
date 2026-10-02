@@ -32,17 +32,40 @@ Al revisar el 5% de los remitentes más riesgosos, el modelo final encuentra 78%
 
 | Archivo | Contenido |
 |---|---|
-| `Notebook.ipynb` | Ingeniería de datos, Etapa A, Etapa B con ablación e interpretabilidad |
+| `Notebook.ipynb` | Ingeniería de datos, Etapa A, Etapa B con ablación e interpretabilidad. Versión corrida en local |
+| `Notebook-Colab.ipynb` | El mismo notebook, con la celda de carga de datos ajustada para Colab y con las salidas de la corrida en una T4 |
 | `Informe.tex`, `Informe.pdf` | Reporte ejecutivo |
 | `referencias.bib` | Referencias del reporte |
 | `AI.md` | Uso de IA generativa |
-| `artifact.txt`, `MVP.txt` | Enlace al demo |
+| `MVP.txt` | Enlace al demo |
 | `figs/` | Figuras de los casos de estudio usadas en el reporte |
 | `aml_outputs/` | Salidas procesadas del notebook |
 | `requirements.txt` | Dependencias |
 
+## Tiempo de ejecución
+
+| Entorno | GPU | Tiempo total |
+|---|---|---|
+| Local (`Notebook.ipynb`) | NVIDIA GeForce RTX 4070 SUPER | 12.3 min |
+| Colab (`Notebook-Colab.ipynb`) | Tesla T4 | 36.9 min (cerca de 38 min medidos a mano) |
+
+El enunciado pide que el notebook corra en menos de 30 minutos en una T4 gratuita de Colab. En Colab tardó más que eso. Se esperaba que cupiera en el límite porque en el equipo local, que es más potente que una T4, tardó menos de 15 minutos. La mayor parte del tiempo es el entrenamiento de la Etapa A, que en la corrida local terminó cerca del minuto 10 de 12.
+
 ## Cómo correr el notebook
 
-1. Instalar las dependencias con `pip install -r requirements.txt`, o usar Colab con GPU.
-2. Conseguir los dos archivos del dataset. En Colab, subirlos a `/content`. Localmente, definir `AML_DATA_DIR` con la carpeta que los contiene.
-3. Ejecutar el notebook de principio a fin. Las salidas se guardan en `aml_outputs/` (en Colab, en `/content/aml_outputs`).
+La única diferencia entre las dos versiones es la celda que carga los datos (la celda 4, la que empieza con `DATASET = ...`). En `Notebook-Colab.ipynb` esa celda busca los archivos en `AML_DATA_DIR`, `/kaggle/input`, `/content` y la carpeta actual, y solo si no los encuentra intenta descargarlos con `kagglehub`. La descarga con `kagglehub` falló en Colab, por eso en Colab hay que subir los archivos.
+
+### En Colab
+
+1. Abrir `Notebook-Colab.ipynb` y elegir un entorno con GPU (Entorno de ejecución, Cambiar tipo de entorno, T4).
+2. Descargar `HI-Small_Trans.csv` y `HI-Small_Patterns.txt` desde https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml (hay que iniciar sesión en Kaggle).
+3. Subir los dos archivos al panel de archivos de Colab (el ícono de carpeta a la izquierda). Quedan en `/content`, que es donde la celda los busca. Esperar a que termine la subida, porque el CSV pesa cerca de 475 MB.
+4. Ejecutar el notebook de principio a fin. Las salidas se guardan en `/content/aml_outputs`. Colab borra esa carpeta al cerrar la sesión, así que hay que descargarla si se necesita.
+
+Los archivos subidos también se borran al cerrar la sesión, así que hay que subirlos de nuevo cada vez.
+
+### En local
+
+1. Instalar las dependencias con `pip install -r requirements.txt`.
+2. Conseguir los dos archivos del dataset y definir `AML_DATA_DIR` con la carpeta que los contiene, o dejarlos en la carpeta del notebook.
+3. Ejecutar `Notebook.ipynb` de principio a fin. Las salidas se guardan en `aml_outputs/`.
