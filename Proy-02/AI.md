@@ -25,22 +25,9 @@ Lo que cambia respecto a escribir el código yo mismo es dónde pongo la atenci�
 
 ## Qué decidí yo y qué hizo la IA
 
-Mías: usar un autoencoder encoder-decoder para la Etapa A; agregar un MLP como baseline; comparar LSTM y Transformer en las dos etapas; fijar el umbral en el 5% de remitentes alertados porque es en lo que se basa el análisis de negocio; recortar gráficas y métricas del notebook; y el formato del reporte y de la documentación, que seguí del enunciado.
+Mías: usar un autoencoder encoder-decoder para la Etapa A; agregar un MLP como baseline; comparar LSTM y Transformer en las dos etapas; fijar el umbral en el 5% de remitentes alertados porque es en lo que se basa el análisis de negocio; cuestionar el umbral de mejor F1 que se había implementado; recortar gráficas y métricas del notebook; interpretar los resultados y plantear las hipótesis sobre ellos (por qué el MLP gana en la Etapa A y por qué el preentrenamiento no ayudó); revisar el análisis de los casos y decidir cómo presentarlos; y el formato del reporte y de la documentación, que seguí del enunciado.
 
-De la IA: la implementación, las pruebas, la redacción del notebook y del borrador del reporte, el demo web (incluida la traducción de los dos modelos a JavaScript, que se verificó contra las salidas de PyTorch), y las hipótesis sobre los resultados. Esas hipótesis (por qué el MLP gana en la Etapa A y por qué el preentrenamiento no ayudó) no las verifiqué con experimentos, y por eso están marcadas como no verificadas en el notebook y en el reporte.
-
-## Prompts representativos de esta etapa
-
-Los copio como los escribí (en inglés), junto con por qué creo que funcionaron.
-
-| Prompt | Por qué funcionó |
-|---|---|
-| "Since it's supposed to be anomaly detection, I think we could do encoder decoder no?" | Propone una idea y la deja abierta a discusión. Terminó en un MLP baseline y un LSTM como autoencoders. |
-| "re-do stage A with both transformer and LSTM and comparisons, based on outputs pick out a threshold for classification I guess then pick metrics. Then for stage B again do like the mixes, transfers w/ transformers & LSTM then the from scratch ones." | Describe el resultado que quiero y cómo juzgarlo (comparar, elegir el umbral con los resultados), no cómo programarlo. |
-| "Is validation F1 the play? Like, we're using other metrics ya know." | Cuestiona una decisión ya implementada. Llevó a cambiar a un umbral del 5%, coherente con las otras métricas. |
-| "Stick to a format similar to like what the actual project PDF asks for... just like answering those questions and justifying what we're doing" | Da el criterio de evaluación del trabajo (el enunciado) en lugar de pedir "un texto más corto". |
-
-<!-- TODO: agregar los prompts de la fase de EDA y de ingeniería de datos, que se hicieron antes de esta sesión. -->
+De la IA: la implementación, las pruebas, la redacción del notebook y del borrador del reporte, y el demo web (incluida la traducción de los dos modelos a JavaScript, que se verificó contra las salidas de PyTorch). 
 
 ## Cómo verifiqué lo que hizo
 

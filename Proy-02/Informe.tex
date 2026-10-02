@@ -3,7 +3,9 @@
 \usepackage[spanish]{babel}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{enumitem}
 \usepackage{tcolorbox}
 \usepackage{hyperref}
@@ -20,10 +22,10 @@
 
 \setlist{itemsep=2pt, topsep=4pt}
 
-\title{\textbf{Detecci\'on de lavado de dinero en remesas con aprendizaje en dos etapas} \vspace{1em}\\
-  Deep Learning y Sistemas Inteligentes - CC3092 \\ Proyecto 2: reporte ejecutivo}
-% TODO: agregar a los dem\'as integrantes del grupo
-\author{Jos\'e Antonio M\'erida Castej\'on}
+\title{\textbf{Proyecto 2: Detección de Lavado de Dinero} \vspace{1em}\\
+  Deep Learning y Sistemas Inteligentes - CC3092}
+% TODO: agregar a los demás integrantes del grupo
+\author{José Antonio Mérida Castejón}
 \date{\today}
 
 \begin{document}
@@ -33,63 +35,67 @@
 
 \section*{Resumen ejecutivo}
 
-\textbf{Qu\'e se construy\'o.} Un sistema que ordena a los remitentes de una remesadora seg\'un qu\'e tan probable es que est\'en lavando dinero, y que explica cada alerta se\~nalando las transacciones concretas que la provocaron. La Etapa A aprende, sin etiquetas, c\'omo se ve el comportamiento normal; la Etapa B aprende de casos etiquetados a distinguir el lavado, partiendo de lo que aprendi\'o la Etapa A.
+\textbf{Sistema.} El proyecto construye un sistema que ordena a los remitentes de una remesadora según qué tan probable es que estén lavando dinero. Cada alerta indica las transacciones que la provocaron. El sistema tiene dos etapas. La Etapa A aprende cómo se ve el comportamiento normal, sin usar etiquetas de lavado. La Etapa B aprende de casos ya etiquetados a reconocer el lavado, y parte de lo que aprendió la Etapa A.
 
-\textbf{Con qu\'e datos.} IBM AML (HI-Small), un dataset sint\'etico de 5,078,345 transacciones donde solo 0.10\% (1 de cada 980) es lavado. No hay datos reales etiquetados de remesas, as\'i que las cifras describen el simulador y no una remesadora real.
+\textbf{Datos.} Se usó IBM AML (HI-Small), un conjunto sintético de cinco millones de transacciones donde solo una de cada mil es lavado. No hay datos reales etiquetados de remesas, por lo que las cifras describen un simulador y no una remesadora real.
 
-\textbf{Qu\'e se encontr\'o.}
+\textbf{Resultados.}
 \begin{itemize}
-  \item Si el equipo de cumplimiento revisa el 5\% de los remitentes que el sistema considera m\'as riesgosos (unos 2,575 de 51,637), encuentra \textbf{78\% de los lavadores} del conjunto de prueba. Alrededor de \textbf{15\% de esas alertas son reales}, contra 1--5\% en sistemas por reglas.
-  \item Aun as\'i, \textbf{85\% de las alertas siguen siendo falsos positivos}. Reduce la carga de revisi\'on, no la elimina.
-  \item \textbf{Resultado negativo:} el sistema de dos etapas \emph{no supera} a un clasificador entrenado desde cero sin la Etapa A, solo lo iguala (PR-AUC de 0.572 contra 0.582, diferencia dentro del ruido). El efecto de preentrenar es inconsistente entre arquitecturas.
-  \item La explicaci\'on funciona: en 67\% de los casos detectados, la transacci\'on a la que el modelo m\'as atenci\'on presta es de lavado (elegir al azar acierta 23\%).
+  \item Si el equipo revisa el 5\% de los remitentes con mayor riesgo, encuentra \textbf{78\% de los lavadores}.
+  \item De esas alertas, \textbf{15\% son reales}. Los sistemas por reglas rondan entre 1\% y 5\%. El resto son falsos positivos, es decir, remitentes legítimos señalados por error. El sistema reduce la carga de revisión, pero no la elimina.
+  \item El sistema de dos etapas \textbf{no supera} a un clasificador entrenado desde cero, sin la Etapa A. Solo lo iguala. Este es el resultado negativo del proyecto.
+  \item La explicación de las alertas es útil. En dos de cada tres casos detectados, la transacción que el modelo más destaca es de lavado. Al azar, ocurriría menos de una vez de cada cuatro.
 \end{itemize}
 
-\textbf{Qu\'e falta.} Datos reales etiquetados, calibraci\'on, cubrir a los remitentes de una sola transacci\'on (31\%) y m\'as de una corrida por modelo (secci\'on~\ref{sec:limites}).
+\textbf{Pendiente.} Hacen falta datos reales etiquetados, probabilidades calibradas y más corridas de entrenamiento (sección~\ref{sec:limites}).
 
 \section{El problema de negocio y su contexto regulatorio}
 
-Guatemala recibe m\'as de USD 20 mil millones anuales en remesas, cerca del 19\% del PIB, y el corredor hacia Estados Unidos es de los m\'as importantes del mundo. Ese volumen facilita el fraccionamiento de montos y obliga a remesadoras y bancos a vigilar sus operaciones.
+Guatemala recibe más de USD 20 mil millones al año en remesas, cerca del 19\% del PIB. El corredor hacia Estados Unidos es de los más grandes del mundo. Son millones de pagos pequeños, y entre ellos es fácil esconder dinero ilícito. Una forma común es partir un monto grande en varios pagos chicos.
 
-En Guatemala, el marco vigente es el Decreto 15-2026, Ley Integral para la Prevenci\'on y Represi\'on del Lavado de Dinero u Otros Activos y del Financiamiento del Terrorismo \cite{decreto152026}. Entr\'o en vigor el 17 de septiembre de 2026 y unifica los Decretos 67-2001 y 58-2005, que deroga (el enunciado todav\'ia cita el primero). La Superintendencia de Bancos supervisa el r\'egimen a trav\'es de la Intendencia de Verificaci\'on Especial (IVE). Las personas obligadas, entre ellas quienes realizan transferencias de fondos o valores, deben administrar sus riesgos por cliente, geograf\'ia, canal y producto, monitorear sus operaciones y reportar las sospechosas a la IVE. El reglamento operativo estaba pendiente al redactar este reporte.
+Por eso, las remesadoras y los bancos que reciben remesas deben detectar operaciones sospechosas y reportarlas. En Guatemala, la ley vigente es el Decreto 15-2026 \cite{decreto152026}, en vigor desde el 17 de septiembre de 2026. Esta ley reemplaza a los Decretos 67-2001 y 58-2005. El enunciado de este proyecto todavía cita el 67-2001, que ya no rige. El decreto exige evaluar el riesgo de cada cliente, monitorear sus operaciones y reportar las sospechosas a la Intendencia de Verificación Especial (IVE), que depende de la Superintendencia de Bancos. El reglamento con los detalles estaba pendiente al redactar este reporte.
 
-A nivel regional e internacional, las Recomendaciones del GAFI piden regular los servicios de transferencia de dinero o valores (Recomendaci\'on 14), controlar las transferencias electr\'onicas (16) y reportar transacciones sospechosas (20) \cite{fatf2012}. En Estados Unidos, las empresas de servicios monetarios se registran ante FinCEN y reportan actividad sospechosa a partir de USD 2,000 \cite{fincen1022}.
+A nivel internacional, el GAFI pide regular las transferencias de dinero y reportar transacciones sospechosas \cite{fatf2012}. En Estados Unidos, las remesadoras reportan actividad sospechosa ante FinCEN desde USD 2,000 \cite{fincen1022}.
 
-\textbf{Qu\'e problema resuelve el sistema.} Los sistemas por reglas tienen 95--99\% de falsos positivos, seg\'un el enunciado, y una alerta sin explicaci\'on no sirve en un entorno regulado: el analista necesita saber qu\'e transacciones la dispararon. Por eso el sistema ordena a los remitentes por riesgo (el equipo revisa desde arriba hasta donde alcance su capacidad) y resalta las transacciones responsables.
+El problema está en cómo se detecta hoy. Los sistemas basados en reglas alertan, por ejemplo, ante cualquier pago sobre cierto monto. Según el enunciado, entre 95\% y 99\% de esas alertas son falsos positivos. El equipo revisa cientos de alertas para encontrar un caso real, y los patrones más sofisticados pasan sin ser vistos. Además, una alerta sin explicación no sirve ante un regulador. El analista necesita saber qué transacciones la provocaron antes de abrir una investigación.
 
-\section{Datos y construcci\'on de secuencias}
+Este proyecto propone un sistema que ordena a los remitentes por nivel de riesgo y señala las transacciones responsables de cada alerta. El equipo revisa desde el más riesgoso hacia abajo, hasta donde alcance su capacidad.
 
-Se us\'o IBM AML (HI-Small) \cite{altman2023} y no PaySim porque simula bancos, personas y empresas con lavado inyectado en tipolog\'ias conocidas y remitentes con historia repetida, que es lo que necesita un modelo de secuencias. En total hay 496,999 remitentes, de los que 3,376 (0.68\%) lavan en alg\'un momento.
+\section{Datos y construcción de secuencias}
 
-El an\'alisis exploratorio, antes de modelar, produjo hallazgos que se volvieron decisiones:
+Se usó IBM AML (HI-Small) \cite{altman2023}, y no PaySim, porque simula bancos, personas y empresas con lavado inyectado en patrones conocidos. Además, sus remitentes tienen historia repetida, que es lo que necesita un modelo de secuencias. Contiene cerca de 497 mil remitentes, y menos del 1\% de ellos lava en algún momento.
+
+Antes de modelar, el análisis exploratorio dejó cuatro hallazgos que se volvieron decisiones.
 \begin{itemize}
-  \item \textbf{El tiempo absoluto es un artefacto del simulador.} La actividad normal se detiene tras el 10 de septiembre, pero el simulador sigue generando lavado (esa cola tiene 12.7\% del total), y los vol\'umenes por d\'ia y hora saltan entre niveles fijos. El modelo solo ve el tiempo desde la transacci\'on anterior del remitente, sin fecha ni hora.
-  \item \textbf{Un formato de pago concentra el lavado.} ACH tiene 87\% de las transacciones de lavado; Wire y Reinvestment no tienen ninguna. No se eliminaron (son comportamiento real), pero en entrenamiento se submuestrean los remitentes que solo usan esos formatos: son negativos seguros que ense\~nan una regla f\'acil.
-  \item \textbf{El monto solo no separa las clases.} Los de lavado son mayores (mediana de USD 5,879 contra 891) pero se traslapan mucho, y abarcan 14 \'ordenes de magnitud; se usa el logaritmo del monto y el monto relativo al t\'ipico del remitente.
-  \item \textbf{Hay ocho tipolog\'ias de lavado} (fan-in, fan-out, ciclos, entre otras), pero solo 62\% de las transacciones de lavado pertenece a una. Las tipolog\'ias no se usan como features (ser\'ian etiquetas disfrazadas), solo para evaluar y explicar.
+  \item \textbf{Las fechas no son confiables.} La actividad normal se detiene después del 10 de septiembre, pero el simulador sigue generando lavado. Por eso el modelo solo ve el tiempo transcurrido desde la transacción anterior del mismo remitente, sin fecha ni hora.
+  \item \textbf{Un formato de pago concentra el lavado.} El formato ACH reúne el 87\% de las transacciones de lavado. Wire y Reinvestment no tienen ninguna. Estos remitentes se submuestrean en entrenamiento, es decir, se usa solo una parte de ellos, porque son casos seguros que enseñan una regla fácil.
+  \item \textbf{El monto no basta para separar las clases.} Los montos de lavado suelen ser mayores, pero se traslapan mucho con los normales. Además, varían entre cantidades muy pequeñas y muy grandes. Por eso se usa el logaritmo del monto y su valor relativo a lo habitual del remitente.
+  \item \textbf{Hay ocho patrones de lavado conocidos.} Se llaman tipologías. Por ejemplo, fan-in es cuando muchos remitentes pagan a un mismo receptor. Solo el 62\% de las transacciones de lavado pertenece a una tipología. No se usan para entrenar, porque serían etiquetas disfrazadas, y sirven para evaluar y explicar.
 \end{itemize}
+
+Cada remitente se representa con ventanas, que son tramos de hasta 32 transacciones seguidas, ordenadas en el tiempo. Una ventana es positiva si contiene al menos una transacción de lavado. La siguiente tabla resume las decisiones y su justificación.
 
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{p{3.2cm}p{5.3cm}p{6.5cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{6.6cm}}
 \toprule
-Decisi\'on & Elecci\'on & Justificaci\'on \\
+Decisión & Elección & Justificación \\
 \midrule
-Features (11 por transacci\'on) & Monto (log y relativo), tiempo desde la anterior, si es el primero, auto-transferencia, mismo banco, cambio de moneda, receptor nuevo, remitentes distintos que ha recibido el receptor, formato y moneda de pago & Todos relativos al remitente; ninguno es fecha ni hora. El conteo de remitentes del receptor da contexto de red (fan-in) y se calcula sin mirar el futuro \\
-Normalizaci\'on & Logaritmo de montos en USD; z-score con estad\'isticas solo de entrenamiento & Montos de 14 \'ordenes de magnitud; sin fuga entre splits \\
-Largo m\'inimo & 2 transacciones & Una sola no forma una secuencia. Bajar de 3 a 2 recupera cerca de 500 remitentes positivos (+18\%); los de una sola transacci\'on (31\%) quedan fuera \\
-Largo m\'aximo & Ventanas de 32 transacciones, paso de 16, a lo m\'as 12 por remitente & Cubre la historia de casi todos y los intentos de lavado (5 a 14 transacciones); el solape evita cortar un patr\'on por el borde; el tope evita que una cuenta muy activa domine \\
-Desbalance & Submuestreo de Wire/Reinvestment en entrenamiento; en la Etapa B, 40 negativos por positivo y focal loss; m\'etricas basadas en PR & Solo 0.10\% de las transacciones y 0.93\% de las ventanas de entrenamiento son positivas; validaci\'on y prueba conservan la distribuci\'on real \\
-Divisi\'on & 70/15/15 por remitente, estratificada por lavado y por cola & Las ventanas solapadas de un remitente comparten transacciones; separarlas filtrar\'ia informaci\'on \\
+Variables de cada transacción & Monto (en logaritmo y relativo al remitente), tiempo desde la transacción anterior, receptor nuevo o conocido, remitentes que ya pagaron a ese receptor, formato y moneda de pago, y algunas banderas & Todas se calculan respecto al remitente y ninguna usa fecha ni hora. El número de remitentes del receptor da contexto de red y se calcula sin mirar el futuro \\
+Normalización & Logaritmo del monto en USD y estandarización con datos de entrenamiento & Los montos varían mucho. Usar solo datos de entrenamiento evita filtrar información \\
+Largo mínimo & 2 transacciones & Una sola no forma una secuencia. Bajar el mínimo de 3 a 2 recupera cerca de 500 remitentes positivos. Los de una sola transacción quedan fuera \\
+Largo máximo & Ventanas de 32 transacciones, con avance de 16 y máximo de 12 por remitente & Cubre la historia de casi todos los remitentes. El solape evita cortar un patrón por el borde, y el tope evita que una cuenta muy activa domine \\
+Desbalance & Submuestreo de Wire y Reinvestment. En la Etapa B, 40 negativos por positivo y una pérdida que da más peso a los casos raros & Solo 0.93\% de las ventanas de entrenamiento son positivas. Validación y prueba conservan la distribución real \\
+División & 70\% entrenamiento, 15\% validación y 15\% prueba, por remitente & Las ventanas de un mismo remitente comparten transacciones. Separarlas entre conjuntos filtraría información \\
 \bottomrule
 \end{tabular}
-\caption{Decisiones de datos y su justificaci\'on. Cada ventana es positiva si contiene una transacci\'on de lavado.}
+\caption{Decisiones de datos y su justificación.}
 \end{table}
 
-La Etapa B entrena con 208,600 remitentes (2,270 positivos); validaci\'on y prueba tienen 51,637 cada uno (486 positivos en prueba). El notebook verifica con pruebas autom\'aticas que ning\'un remitente caiga en dos splits y que las etiquetas sean consistentes, y muestra la distribuci\'on de largos (mediana de 2 transacciones por remitente) y ejemplos de secuencias normales y sospechosas. Estas \'ultimas no se distinguen a simple vista: cada una tiene un solo pago de lavado entre transacciones de aspecto normal, y la se\~nal est\'a en la combinaci\'on de monto, tiempo, receptor y formato, lo que justifica un modelo de secuencias.
+La Etapa B entrena con cerca de 209 mil remitentes, de los cuales 2,270 son positivos. Validación y prueba tienen cerca de 51,600 remitentes cada uno, y la prueba incluye 486 positivos. El notebook comprueba que ningún remitente aparezca en dos conjuntos, y muestra ejemplos de secuencias normales y sospechosas. Las sospechosas no se distinguen a simple vista, porque tienen un solo pago de lavado entre transacciones de aspecto normal. La señal aparece al combinar monto, tiempo, receptor y formato, y por eso se usa un modelo de secuencias.
 
-\section{Dise\~no del sistema}
+\section{Diseño del sistema}
 
 \begin{figure}[ht]
 \centering
@@ -101,9 +107,9 @@ La Etapa B entrena con 208,600 remitentes (2,270 positivos); validaci\'on y prue
 ]
 \node[box] (a1) {Ventana de\\32 transacciones};
 \node[box, right=of a1] (a2) {Encoder};
-\node[box, right=of a2] (a3) {$z$\\(32 n\'umeros)};
+\node[box, right=of a2] (a3) {$z$\\(32 números)};
 \node[box, right=of a3] (a4) {Decoder};
-\node[outbox, right=of a4] (a5) {Error de\\reconstrucci\'on};
+\node[outbox, right=of a4] (a5) {Error de\\reconstrucción};
 \draw[arr] (a1)--(a2); \draw[arr] (a2)--(a3); \draw[arr] (a3)--(a4); \draw[arr] (a4)--(a5);
 \node[left=2mm of a1, font=\bfseries\small, xshift=-2mm] {A};
 
@@ -120,41 +126,41 @@ La Etapa B entrena con 208,600 remitentes (2,270 positivos); validaci\'on y prue
 
 \subsection{Etapa A: aprender lo normal}
 
-\textbf{Idea.} Hay muy pocos positivos y el lavado cambia de forma, as\'i que en lugar de definir qu\'e es sospechoso se aprende qu\'e es normal, que es lo abundante. Un autoencoder (Lab-03) comprime cada ventana a 32 n\'umeros y trata de reconstruirla; una ventana que no se parece a nada de lo visto se reconstruye mal, y ese error es el puntaje de anomal\'ia. El decoder solo recibe esos 32 n\'umeros y la posici\'on que debe llenar, nunca la ventana original: si la viera, la copiar\'ia entera, anomal\'ias incluidas, y no habr\'ia nada que aprender. Se entrena solo con ventanas de remitentes que nunca lavaron.
+\textbf{Idea.} Hay muy pocos casos de lavado y el lavado cambia de forma. Por eso, en lugar de definir qué es sospechoso, el sistema aprende qué es normal, que es lo más abundante. Para esto se usa un autoencoder (Lab-03), una red neuronal con dos partes. El encoder resume cada ventana en 32 números, y el decoder intenta reconstruir la ventana a partir de ese resumen. Una ventana parecida a lo normal se reconstruye bien. Una ventana rara se reconstruye mal, y ese error de reconstrucción es el puntaje de anomalía. El decoder nunca ve la ventana original, porque si la viera podría copiarla completa, incluidas las anomalías. La Etapa A se entrena solo con remitentes que nunca lavaron.
 
-\textbf{Qu\'e arquitecturas se probaron y por qu\'e.} Se compararon tres encoders con la misma p\'erdida y receta de entrenamiento, para que la diferencia sea solo la arquitectura. Un MLP sobre la ventana aplanada, que no modela orden, es el piso: si los dem\'as no lo superan, la secuencia no aporta. Un LSTM bidireccional \cite{hochreiter1997} lee las transacciones en orden con una memoria, lo que importa cuando lo relevante es qu\'e pas\'o antes (Lab-02). Un Transformer \cite{vaswani2017} deja que cada transacci\'on mire a todas las dem\'as (Lab-04, Proyecto 1), \'util para patrones como montos repetidos, y se usa en detecci\'on de anomal\'ias en series de tiempo \cite{xu2022}. Los dos terminan en un attention pooling que maneja largos variables y da un peso por transacci\'on, que luego sirve de mapa de calor.
+\textbf{Arquitecturas comparadas.} Se compararon tres tipos de encoder, con la misma pérdida y el mismo entrenamiento, para que la única diferencia fuera la arquitectura. El primero es un MLP, una red simple que recibe la ventana completa sin considerar el orden. El segundo es un LSTM \cite{hochreiter1997}, una red que lee las transacciones una por una y mantiene una memoria de lo anterior (Lab-02). El tercero es un Transformer \cite{vaswani2017}, que usa un mecanismo de atención para que cada transacción pueda mirar a todas las demás de la ventana (Lab-04, Proyecto 1). Este tipo de red también se usa para detectar anomalías en series de tiempo \cite{xu2022}. Ambos terminan en una capa de attention pooling, que da un peso a cada transacción según su importancia. Esos pesos se usan después como mapa de calor.
 
-\textbf{Puntaje y umbral.} El error crece con el largo de la ventana, as\'i que un puntaje crudo medir\'ia cu\'anta actividad tiene el remitente y no qu\'e tan raro es. Validaci\'on eligi\'o, entre tres puntajes y dos agregaciones, el error de las 3 peores transacciones normalizado por largo, con el m\'aximo sobre ventanas. El umbral de alerta es el puntaje de validaci\'on que deja alertado al 5\% de los remitentes, la capacidad real de revisi\'on del equipo; se descart\'o el de mejor F1, que alertaba apenas al 0.5\%.
+\textbf{Puntaje y umbral.} El error de reconstrucción crece con el largo de la ventana. Un puntaje sin ajustar favorecería a los remitentes con más actividad. Por eso se compararon varias formas de calcularlo, y validación eligió la que promedia el error de las tres peores transacciones y lo normaliza por el largo de la ventana. El umbral de alerta es el puntaje que deja alertado al 5\% de los remitentes en validación, que representa la capacidad de revisión del equipo. Se descartó el umbral que maximiza el F1, una métrica que combina precisión y recall, porque alertaba a menos del 1\% de los remitentes.
 
 \subsection{Etapa B: clasificador y transfer learning}
 \label{sec:etapab}
 
-La Etapa B es un clasificador: un encoder, un attention pooling nuevo y un MLP que da la probabilidad de lavado de cada ventana. La probabilidad de un remitente es la de su ventana m\'as sospechosa, porque un remitente es positivo si alguna ventana contiene lavado y un promedio diluir\'ia una ventana mala entre muchas normales.
+La Etapa B es un clasificador. Recibe una ventana y calcula la probabilidad de que contenga lavado. Usa un encoder, una capa de attention pooling nueva y una red pequeña que entrega la probabilidad. La probabilidad de un remitente es la de su ventana más sospechosa. Un promedio diluiría una ventana mala entre muchas normales.
 
-\textbf{Estrategia de transfer learning (Semana 9, Lab-06).} Hay solo 2,270 remitentes positivos contra 206 mil normales, y el encoder de la Etapa A ya vio a los normales; la hip\'otesis es que esa representaci\'on ayuda al clasificador. Se prob\'o con LSTM y con Transformer, para ver si la conclusi\'on depende de la arquitectura (el MLP no produce un vector por transacci\'on), con tres variantes que responden preguntas distintas:
+\textbf{Transfer learning (Semana 9, Lab-06).} Transfer learning consiste en reutilizar lo que una red aprendió en una tarea para resolver otra. Aquí hay solo 2,270 remitentes positivos de entrenamiento contra más de 200 mil normales. El encoder de la Etapa A ya vio a los normales, así que la hipótesis es que su representación ayuda al clasificador. Se probó con LSTM y con Transformer, para ver si la conclusión depende de la arquitectura. El MLP no se usa aquí porque no produce una representación por transacción. Cada arquitectura se entrenó de tres formas.
 \begin{itemize}
-  \item \textbf{Desde cero:} pesos aleatorios, solo con etiquetas. Es el baseline: si no se le gana, el preentrenamiento no aporta.
-  \item \textbf{Congelado:} se usa el encoder de la Etapa A sin modificarlo y se entrena solo el pooling y la cabeza. Mide el valor puro de la representaci\'on.
-  \item \textbf{Ajustado:} se parte del encoder de la Etapa A y se entrena todo, con el encoder a un d\'ecimo del learning rate y una primera \'epoca solo con la cabeza, para que gradientes ruidosos no da\~nen lo aprendido. Prueba si adaptarla mejora lo anterior.
+  \item \textbf{Desde cero.} El encoder empieza con pesos aleatorios y aprende solo con etiquetas. Es la línea base. Si el sistema de dos etapas no la supera, la Etapa A no aporta.
+  \item \textbf{Congelado.} Se usa el encoder de la Etapa A sin modificarlo, y solo se entrenan las capas nuevas. Mide cuánto vale la representación tal como llegó.
+  \item \textbf{Ajustado.} Se parte del encoder de la Etapa A y se entrena todo, con un ritmo de aprendizaje diez veces menor en el encoder. La primera época entrena solo las capas nuevas, para que los errores iniciales no dañen lo aprendido. Mide si adaptar la representación mejora el resultado anterior.
 \end{itemize}
 
-\textbf{P\'erdida (Lab-05).} Con 0.93\% de ventanas positivas, cada \'epoca usa todas ellas y 40 negativos por positivo. Se compararon la focal loss \cite{lin2017}, que le quita peso a lo que ya se acierta, y la entrop\'ia cruzada ponderada (positivos $\times 40$), ambas respuestas est\'andar al desbalance. Gan\'o la focal en validaci\'on y se us\'o en los seis modelos.
+\textbf{Pérdida (Lab-05).} La pérdida es la medida de error que el modelo intenta reducir. Solo 0.93\% de las ventanas son positivas, así que cada época usa todas las positivas y 40 negativas por cada una. Además, se compararon dos pérdidas diseñadas para clases desbalanceadas. La focal loss \cite{lin2017} da menos peso a los casos que el modelo ya acierta. La entropía cruzada ponderada multiplica por 40 el error de los casos positivos. Ganó la focal en validación y se usó en los seis modelos.
 
-\textbf{Combinaci\'on de se\~nales.} La predicci\'on final es $w\cdot\mathrm{pct}(B)+(1-w)\cdot\mathrm{pct}(A)$, con $\mathrm{pct}$ el percentil de cada puntaje y $w$ elegido en validaci\'on. Prueba si el puntaje de anomal\'ia agrega algo; con $w=1$ la Etapa A no aporta.
+\textbf{Combinación de señales.} La predicción final mezcla el puntaje de la Etapa B con el de la Etapa A, ambos convertidos a percentil para que sean comparables. Un peso, elegido en validación, define cuánto cuenta cada uno. Con peso 1 solo cuenta la Etapa B.
 
-\subsection{M\'etricas}
+\subsection{Métricas}
 
-Con 0.1\% de positivos, la exactitud no sirve (alertar nunca da 99.9\%). La m\'etrica de selecci\'on es el PR-AUC por remitente, que mide la calidad de todo el ranking (un ranking aleatorio da 0.009). Para el negocio se reportan el \textbf{recall al 5\%} (qu\'e fracci\'on de los lavadores encuentra el equipo si revisa el 5\% m\'as riesgoso) y la \textbf{precisi\'on} (de las alertas, cu\'antas son reales), tanto en las 100 alertas m\'as altas como en el 5\% completo. Todo se eval\'ua por remitente, que es la unidad que recibe una alerta, con intervalos bootstrap del 95\%.
+Con tan pocos casos de lavado, la exactitud no sirve, porque un modelo que nunca alerta acertaría el 99.9\% de las veces. La métrica de selección es el PR-AUC, que resume la calidad del ranking completo de remitentes. Un ranking aleatorio da 0.009 y uno perfecto da 1. Para el negocio se reportan dos medidas. El \textbf{recall al 5\%} es la fracción de los lavadores que se encuentra al revisar el 5\% de remitentes más riesgosos. La \textbf{precisión} es la fracción de las alertas que son reales, y se mide en las 100 alertas más altas y en el 5\% completo. Todo se calcula por remitente, que es la unidad que recibe una alerta. Los intervalos de confianza del 95\% se calculan con bootstrap, que repite la evaluación sobre muestras al azar y da un rango razonable para cada cifra.
 
-\section{Resultados del experimento de ablaci\'on}
+\section{Resultados del experimento de ablación}
 
-El experimento obligatorio compara el sistema de dos etapas contra un clasificador entrenado desde cero. La primera tabla muestra qu\'e logra la Etapa A sola.
+El experimento obligatorio compara el sistema de dos etapas con un clasificador entrenado desde cero. La primera tabla muestra qué logra la Etapa A sola.
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{lccc}
 \toprule
-Etapa A (sin etiquetas) & PR-AUC prueba & Recall @5\% & Precisi\'on @5\% \\
+Etapa A (sin etiquetas) & PR-AUC prueba & Recall @5\% & Precisión @5\% \\
 \midrule
 MLP (baseline) & 0.243 & 0.47 & 0.09 \\
 LSTM & 0.158 & 0.43 & 0.08 \\
@@ -165,7 +171,7 @@ Transformer & 0.157 & 0.46 & 0.09 \\
 \label{tab:etapaa}
 \end{table}
 
-Los tres autoencoders rankean entre 17 y 26 veces mejor que el azar y encuentran 43--47\% de los lavadores al alertar al 5\%, pero sin etiquetas el puntaje solo mide qu\'e tan inusual es una ventana, no si es lavado, y casi no detecta el lavado sin tipolog\'ia (14\%). El MLP, el m\'as simple, gan\'o, lo que no se esperaba; no se verific\'o por qu\'e.
+Los tres autoencoders ordenan a los remitentes mucho mejor que el azar, y encuentran entre 43\% y 47\% de los lavadores al revisar el 5\%. Sin etiquetas, el puntaje solo mide qué tan inusual es una ventana, y casi no detecta el lavado sin patrón conocido. El MLP, el modelo más simple, obtuvo el mejor resultado. Esto no se esperaba, y no se verificó por qué.
 
 \begin{table}[ht]
 \centering
@@ -183,7 +189,7 @@ Transformer congelado & 0.549 & 0.504 [0.460, 0.555] & 0.73 & 0.96 & 0.14 \\
 \textbf{Transformer ajustado (final)} & \textbf{0.600} & \textbf{0.572 [0.531, 0.614]} & \textbf{0.78} & \textbf{1.00} & \textbf{0.15} \\
 \bottomrule
 \end{tabular}
-\caption{Etapa B: seis modelos con el mismo loss, muestreo y early stopping. P@$k$ es la precisi\'on de las $k$ alertas m\'as altas o del 5\% alertado.}
+\caption{Etapa B. Seis modelos con la misma pérdida, el mismo muestreo y el mismo criterio de parada. P@100 y P@5\% son la precisión de las 100 alertas más altas y del 5\% alertado.}
 \label{tab:etapab}
 \end{table}
 
@@ -205,19 +211,21 @@ Transformer congelado & 0.549 & 0.504 [0.460, 0.555] & 0.73 & 0.96 & 0.14 \\
 \caption{PR-AUC en prueba por modelo. Gris: Etapa A sola. Azul: Etapa B.}
 \end{figure}
 
-El salto grande es pasar a supervisado: de 0.16--0.24 a 0.3--0.6 de PR-AUC. El efecto de preentrenar, en cambio, es inconsistente. Seg\'un un bootstrap pareado sobre PR-AUC, con el Transformer el ajuste fino queda ligeramente por encima de entrenar desde cero ($+0.014$, IC 95\% $[-0.002,+0.030]$, dentro del ruido) y congelar pierde ($-0.054$); con el LSTM, ajustar es claramente peor ($-0.085$, $[-0.108,-0.063]$) y congelar mucho peor ($-0.261$). La mezcla con la Etapa A tampoco ayuda: validaci\'on eligi\'o $w=1$ en cinco de los seis modelos. Si preentrenar aportara algo general, el signo ser\'ia el mismo en las dos arquitecturas; lo m\'as probable es que no haya un efecto real y que las diferencias vengan de ruido (una sola semilla, y resultados que cambian un poco entre corridas) y de c\'omo se optimiza cada encoder. Una explicaci\'on posible, no verificada, es que reconstruir lo normal no obliga al encoder a representar lo que distingue al lavado \cite{gururangan2020}.
+El mayor salto ocurre al pasar a un modelo supervisado, que usa etiquetas. El efecto de preentrenar es inconsistente. Para compararlo se usó un bootstrap pareado, que evalúa dos modelos sobre las mismas muestras. Con el Transformer, el ajuste fino queda apenas por encima de entrenar desde cero ($+0.014$), dentro del ruido estadístico, y congelar el encoder empeora el resultado ($-0.054$). Con el LSTM, ajustar empeora el resultado ($-0.085$) y congelar lo empeora mucho más ($-0.261$). La mezcla con la Etapa A tampoco ayuda, porque validación eligió peso 1 en cinco de los seis modelos.
 
-El modelo final es el \textbf{Transformer ajustado}. Empata en la pr\'actica con el LSTM desde cero (PR-AUC de prueba 0.572 contra 0.582, diferencia $-0.011$ con IC $[-0.027,+0.007]$; recall al 5\% de 0.78 contra 0.79; el LSTM tiene un PR-AUC de validaci\'on apenas mayor, 0.612 contra 0.600), y entre las dos arquitecturas desde cero el LSTM supera al Transformer por 0.025 ($[+0.008,+0.042]$), coherente con que modelos simples compitan con los Transformers \cite{zeng2023}. Se eligi\'o porque es el mejor sistema que usa la Etapa A, que es lo que pide el proyecto, y porque su atenci\'on s\'i se\~nala el lavado (secci\'on siguiente); el LSTM desde cero queda como baseline. La conclusi\'on honesta es que la Etapa A no hizo mejor al clasificador: el sistema de dos etapas lo iguala.
+Si preentrenar sirviera de forma general, el efecto tendría el mismo signo en las dos arquitecturas. Lo más probable es que no haya un efecto real y que las diferencias vengan de ruido. Cada modelo se entrenó una sola vez, y los resultados varían un poco entre corridas. Una explicación posible, que no se verificó, es que reconstruir lo normal no obliga al encoder a representar lo que distingue al lavado \cite{gururangan2020}.
 
-\section{Interpretabilidad y an\'alisis de casos}
+El modelo final es el \textbf{Transformer ajustado}. Su resultado es prácticamente igual al del LSTM entrenado desde cero. El PR-AUC en prueba es 0.572 contra 0.582, y la diferencia queda dentro del ruido. El recall al 5\% es 0.78 contra 0.79. Entre las dos arquitecturas entrenadas desde cero, el LSTM supera al Transformer por 0.025. Esto es coherente con otros trabajos donde modelos simples compiten con los Transformers \cite{zeng2023}. Se eligió el Transformer ajustado porque es el mejor sistema que usa la Etapa A, que es lo que pide el proyecto, y porque su atención señala el lavado. El LSTM desde cero queda como línea base. En resumen, la Etapa A no mejoró al clasificador, y el sistema de dos etapas solo lo iguala.
 
-El modelo final tiene un attention pooling que da un peso por transacci\'on, pero los pesos de atenci\'on no son por s\'i mismos una explicaci\'on fiel \cite{jain2019}. Como el dataset marca las transacciones de lavado, se puede medir si la atenci\'on cae sobre ellas y compararla con el error de reconstrucci\'on por transacci\'on de la Etapa A. En los 381 remitentes positivos detectados cuya mejor ventana contiene lavado, la transacci\'on con m\'as atenci\'on es de lavado el 67\% de las veces (elegir al azar: 23\%), y la de mayor error de reconstrucci\'on de la Etapa A lo es el 72\%. Ambas se\~nales sirven como explicaci\'on, y la segunda es independiente de la primera.
+\section{Interpretabilidad y análisis de casos}
+
+El modelo final asigna un peso de atención a cada transacción. Esos pesos indican en qué transacciones se fijó el modelo, pero no garantizan por sí solos una explicación fiel \cite{jain2019}. Como el conjunto de datos marca cuáles transacciones son lavado, se puede medir si la atención cae sobre ellas, y compararla con el error de reconstrucción de la Etapa A. Entre los 381 remitentes positivos detectados, la transacción con más atención es de lavado el 67\% de las veces, y al azar sería el 23\%. La transacción con mayor error de la Etapa A es de lavado el 72\% de las veces. Ambas señales sirven como explicación.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lccc}
 \toprule
-Tipolog\'ia & Positivos & Detectados & Recall \\
+Tipología & Positivos & Detectados & Recall \\
 \midrule
 FAN-OUT & 3 & 3 & 1.00 \\
 SCATTER-GATHER & 43 & 41 & 0.95 \\
@@ -227,50 +235,82 @@ STACK & 58 & 55 & 0.95 \\
 FAN-IN & 51 & 46 & 0.90 \\
 BIPARTITE & 30 & 23 & 0.77 \\
 GATHER-SCATTER & 42 & 33 & 0.79 \\
-Sin tipolog\'ia & 195 & 120 & 0.62 \\
+Sin tipología & 195 & 120 & 0.62 \\
 \midrule
 \textbf{Total} & \textbf{486} & \textbf{381} & \textbf{0.78} \\
 \bottomrule
 \end{tabular}
-\caption{Detecci\'on por tipolog\'ia del sistema final, con 5\% de remitentes alertados, en prueba.}
+\caption{Detección por tipología del sistema final, con 5\% de remitentes alertados, en prueba.}
 \label{tab:tipologias}
 \end{table}
 
-Las tipolog\'ias nombradas se detectan bien (77--100\%, Cuadro~\ref{tab:tipologias}); lo que se escapa es sobre todo el lavado sin tipolog\'ia, el 40\% de los positivos, que la Etapa A sola casi no ve (14\%). Los positivos de la cola se detectan m\'as que el resto (93\% contra 76\%), a pesar de que el modelo no ve tiempo absoluto: es una se\~nal a vigilar de un posible artefacto del simulador.
+Las tipologías nombradas se detectan bien (Cuadro~\ref{tab:tipologias}). Lo que se escapa es sobre todo el lavado sin tipología, que es el 40\% de los positivos. La Etapa A sola casi no lo detecta. Los positivos de la cola de actividad se detectan más que el resto, aunque el modelo no ve fechas. Esto puede venir de un artefacto del simulador y conviene vigilarlo.
 
-Se analizaron cinco casos de prueba, elegidos autom\'aticamente: los tres verdaderos positivos mejor rankeados, el falso positivo mejor rankeado y el positivo con tipolog\'ia conocida peor rankeado. Cada uno tiene mapa de calor y explicaci\'on en lenguaje natural, el mismo texto del demo web.
+Se analizaron cinco casos del conjunto de prueba, elegidos automáticamente. Son los tres verdaderos positivos mejor ordenados, el falso positivo mejor ordenado y el falso negativo con tipología conocida peor ordenado. Cada caso tiene un mapa de calor y una explicación en lenguaje natural. El demo web (MVP) muestra el mismo texto, junto con ambos puntajes, para cada remitente de prueba. Está disponible en \url{https://claude.ai/artifact/TKe6FkAd5X1zkJtM2yKPfa}.
 
-\begin{itemize}
-  \item \textbf{Verdadero positivo 1 (fan-in).} 5 transacciones; solo la \'ultima (USD 18,515 por ACH) es de lavado y concentra 96\% de la atenci\'on: un pago a un receptor nuevo que ya hab\'ia recibido de 17 remitentes distintos, hecho al mismo tiempo que el anterior. Es el patr\'on de fan-in: muchos remitentes convergen en un receptor.
-  \item \textbf{Verdadero positivo 2 (fan-in).} El mismo patr\'on: la \'ultima transacci\'on (USD 19,031, a un receptor que ya hab\'ia recibido de 12 remitentes) recibe 94\% de la atenci\'on.
-  \item \textbf{Verdadero positivo 3 (fan-in).} 32 transacciones; solo la \'ultima (USD 8,334 a un receptor nuevo) es de lavado y recibe 98\% de la atenci\'on, aunque solo 22\% de la ventana es ACH.
-  \item \textbf{Falso positivo.} Un remitente leg\'itimo con 6 pagos por ACH, dos de exactamente USD 2,318 sin separaci\'on en el tiempo y uno de USD 0. Parece fraccionamiento de montos, y el modelo no puede saber que es leg\'itimo. La explicaci\'on le muestra al analista por qu\'e salt\'o.
-  \item \textbf{Falso negativo (bipartite).} La transacci\'on de lavado es la \#2 (USD 8,809 a un receptor nuevo) y la atenci\'on s\'i la encuentra (58\%), pero el clasificador dej\'o al remitente en el percentil 82, fuera del 5\% alertado. La Etapa A lo ubic\'o en el percentil 99 de anomal\'ia, pero con $w=1$ esa se\~nal no entra a la decisi\'on.
-\end{itemize}
+\textbf{Verdadero positivo 1 (fan-in).} La ventana tiene cinco transacciones, y solo la última es de lavado (USD 18,515 por ACH). Recibe 96\% de la atención. Es un pago a un receptor nuevo que ya había recibido dinero de 17 remitentes distintos. Esto corresponde al patrón fan-in, donde muchos remitentes pagan a un mismo receptor.
 
-\section{Limitaciones y camino a producci\'on}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/caso1.png}
+\caption{Verdadero positivo 1. Atención del modelo final (arriba) y error de reconstrucción de la Etapa A (abajo) por transacción. En rojo, la transacción de lavado.}
+\end{figure}
+
+\textbf{Verdadero positivo 2 (fan-in).} Presenta el mismo patrón. La última transacción (USD 19,031) recibe 94\% de la atención, y su receptor ya había recibido dinero de 12 remitentes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/caso2.png}
+\caption{Verdadero positivo 2.}
+\end{figure}
+
+\textbf{Verdadero positivo 3 (fan-in).} La ventana tiene 32 transacciones y solo la última es de lavado (USD 8,334 a un receptor nuevo). Recibe 98\% de la atención, aunque solo 22\% de la ventana usa ACH.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/caso3.png}
+\caption{Verdadero positivo 3.}
+\end{figure}
+
+\textbf{Falso positivo.} Un remitente legítimo hizo seis pagos por ACH. Dos fueron de exactamente USD 2,318 y sin separación en el tiempo, y uno fue de USD 0. Esto se parece a un fraccionamiento de montos, y el modelo no tiene forma de saber que el remitente es legítimo. La explicación permite al analista descartar la alerta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/caso4.png}
+\caption{Falso positivo.}
+\end{figure}
+
+\textbf{Falso negativo (bipartite).} La transacción de lavado es la número 2 de la ventana (USD 8,809 a un receptor nuevo), y la atención la encuentra con 58\%. Aun así, el clasificador ubicó al remitente en el percentil 82 de riesgo, es decir, más riesgoso que el 82\% de los remitentes y fuera del 5\% alertado. La Etapa A lo había ubicado en el percentil 99 de anomalía, pero con peso 1 esa señal no entra en la decisión final.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/caso5.png}
+\caption{Falso negativo.}
+\end{figure}
+
+
+\section{Limitaciones y camino a producción}
 \label{sec:limites}
 
 \textbf{Limitaciones.}
 \begin{itemize}
-  \item Los datos son sint\'eticos y tienen artefactos del simulador; los resultados no se pueden extrapolar a remesas reales ni a su tasa de lavado.
-  \item La vista por remitente ve un solo lado de un fen\'omeno de red: detecta 77--100\% de las tipolog\'ias nombradas, pero 62\% del lavado sin tipolog\'ia. Un modelo de grafos podr\'ia ver mejor esos casos. Los remitentes de una sola transacci\'on (31\%) quedan fuera del alcance.
-  \item El preentrenamiento no mejor\'o de forma consistente. Habr\'ia que probar un objetivo m\'as cercano a la tarea, o usar los errores de la Etapa A como feature.
-  \item Hay una sola semilla por modelo y los resultados cambian un poco entre corridas: no se puede separar un efecto real del preentrenamiento de ruido de optimizaci\'on.
+  \item Los datos son sintéticos y tienen artefactos del simulador. Los resultados no se pueden extrapolar a remesas reales ni a su tasa de lavado.
+  \item El modelo ve a cada remitente por separado, pero el lavado es un fenómeno de red. Detecta la mayoría de los patrones conocidos, pero no el lavado sin tipología. Los remitentes con una sola transacción (31\%) quedan fuera del alcance.
+  \item El preentrenamiento no mejoró el resultado de forma consistente. Habría que probar otro objetivo de preentrenamiento.
+  \item Cada modelo se entrenó una sola vez, y los resultados cambian un poco entre corridas. Por eso no se puede separar un efecto real del ruido. Repetir con varias semillas aleatorias lo aclararía.
 \end{itemize}
 
-\textbf{Para llevarlo a producci\'on en una remesadora.}
+\textbf{Para llevarlo a producción en una remesadora.}
 \begin{itemize}
-  \item \textbf{Datos reales etiquetados}, como los reportes de operaciones sospechosas; son incompletos y tardan en llegar.
-  \item \textbf{Calibraci\'on y umbrales.} Las probabilidades no est\'an calibradas por el muestreo de negativos; el umbral debe fijarse con la capacidad real de revisi\'on y el reglamento del Decreto 15-2026.
-  \item \textbf{Monitoreo y reentrenamiento.} Vigilar el volumen de alertas, la deriva de los datos y la tasa de aciertos, y reentrenar peri\'odicamente.
-  \item \textbf{Revisi\'on humana y gobierno del modelo.} Cada alerta pasa por un analista con la explicaci\'on a la vista y queda registrada para auditor\'ia; el modelo se documenta y se valida de forma independiente.
+  \item \textbf{Datos reales etiquetados.} Por ejemplo, los reportes de operaciones sospechosas. Son incompletos y tardan en llegar.
+  \item \textbf{Calibración y umbrales.} Las probabilidades del modelo no están calibradas, porque el entrenamiento usó pocos negativos. Calibrar significa ajustarlas a la frecuencia real de lavado. El umbral debe fijarse con la capacidad real de revisión y con el reglamento del Decreto 15-2026.
+  \item \textbf{Monitoreo y reentrenamiento.} Se debe vigilar el volumen de alertas, los cambios en los datos y la proporción de alertas reales, y reentrenar de forma periódica.
+  \item \textbf{Revisión humana y gobierno del modelo.} Cada alerta pasa por un analista con la explicación a la vista, y queda registrada para auditoría.
 \end{itemize}
 
 \section{Uso de IA generativa}
 
-% TODO: el grupo debe revisar y completar esta secci\'on (m\'aximo 200 palabras) con todo el uso de IA durante el proyecto.
-Se us\'o Claude (Anthropic), a trav\'es de Claude Code, para reorganizar el c\'odigo del notebook de las etapas A y B, documentar el notebook, verificar referencias y ley vigente, construir el demo web y redactar el borrador de este reporte a partir de los resultados. Las decisiones de dise\~no fueron del grupo: usar un autoencoder encoder-decoder en la Etapa A; agregar un MLP como baseline; comparar LSTM y Transformer en ambas etapas en lugar de fijar una arquitectura; y fijar el umbral en el 5\% de remitentes alertados como base del an\'alisis de negocio. La IA propuso la hip\'otesis sobre por qu\'e el preentrenamiento no ayud\'o, marcada en el texto como no verificada.
+Se usó Claude (Anthropic), a través de Claude Code, para reorganizar el código de las etapas A y B, documentar el notebook, verificar las referencias y la ley vigente, construir el demo web y redactar el borrador de este reporte. Las decisiones de diseño fueron propias. Se decidió usar un autoencoder encoder-decoder en la Etapa A, agregar un MLP como línea base y comparar LSTM y Transformer en ambas etapas. También se fijó el umbral en el 5\% de remitentes alertados, y se cuestionó el umbral de mejor F1 que se había implementado. El grupo interpretó los resultados y planteó las hipótesis sobre ellos, que en el texto están marcadas como no verificadas. El detalle completo, con la verificación y los errores de la IA, está en el archivo \texttt{AI.md}.
 
 \printbibliography
 

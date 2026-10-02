@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber Informe"] 1790968740.5048 "Informe.bcf" "Informe.bbl" "Informe" 1790971294.83581 0
-  "Informe.bcf" 1790971294.76887 107614 669c9a505cf08c1f82a03629b6e30dd0 "pdflatex"
+["biber Informe"] 1790974897.3848 "Informe.bcf" "Informe.bbl" "Informe" 1790976625.82061 0
+  "Informe.bcf" 1790976625.76341 107614 669c9a505cf08c1f82a03629b6e30dd0 "pdflatex"
   "referencias.bib" 1790903694.05436 4111 07fd5a8bb76f60ab51423a3d0bbda108 ""
   (generated)
   "Informe.bbl"
   "Informe.blg"
   (rewritten before read)
-["pdflatex"] 1790971294.06982 "Informe.tex" "Informe.pdf" "Informe" 1790971294.83599 0
+["pdflatex"] 1790976624.98305 "Informe.tex" "Informe.pdf" "Informe" 1790976625.82079 0
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -245,6 +245,7 @@
   "/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty" 1576624809 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1657483315 9714 ba3194bd52c8499b3f1e3eb91d409670 ""
   "/usr/share/texlive/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty" 1679417270 100426 2bce05b9314899534186dd5b9964ae73 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty" 1667332637 12691 5b542990fe866f3d772f71346cf85b95 ""
   "/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty" 1667332637 7392 f19cdc68ae9f1190dbd54eee6d29fb7c ""
   "/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty" 1253232110 1380 971a51b00a14503ddf754cab24c3f209 ""
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
@@ -252,11 +253,16 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1721433600 40900 887e0dc8cac988a9e9c574af364cf837 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1753325278.80609 4547823 614eba97e0451aad345770236b030e55 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1753325113 7759950 87638d54a7f5dd0784c3358b6ffe4ac5 ""
-  "Informe.aux" 1790971294.76687 5491 9fd28a488563b20157b16bd16102b6e4 "pdflatex"
-  "Informe.bbl" 1790968740.92861 18837 f486c41099419691ff250e28e07ee239 "biber Informe"
-  "Informe.out" 1790971294.76787 2127 7caddd6c5857292968585d60e5cc73b0 "pdflatex"
-  "Informe.run.xml" 1790971294.77091 2327 63aafd9c3866abcd7a058bb30ed5938e "pdflatex"
-  "Informe.tex" 1790971293.26532 25490 29f74069f073fd5cd907052840c344cd ""
+  "Informe.aux" 1790976625.76203 6268 fabacca012251fb8e9d9360769fb6091 "pdflatex"
+  "Informe.bbl" 1790974897.77782 18837 f486c41099419691ff250e28e07ee239 "biber Informe"
+  "Informe.out" 1790976625.76341 2127 7caddd6c5857292968585d60e5cc73b0 "pdflatex"
+  "Informe.run.xml" 1790976625.76503 2327 63aafd9c3866abcd7a058bb30ed5938e "pdflatex"
+  "Informe.tex" 1790976623.77963 27115 a43a80f58d0b9b30ad154c02b6f2d0ab ""
+  "figs/caso1.png" 1790974880.48013 19846 789591d483bcc658643a1a9c51c91e97 ""
+  "figs/caso2.png" 1790974880.48019 20424 23702228a063dc06d22232a94bb6e99e ""
+  "figs/caso3.png" 1790974880.48023 21106 9d6963df2854b7624cc8fb9c2b5385c4 ""
+  "figs/caso4.png" 1790974880.48027 21462 6a1959511882e6e249a78460a0a7a9ff ""
+  "figs/caso5.png" 1790974880.4803 21791 23a89590548c99160a1300c5e833289e ""
   (generated)
   "Informe.aux"
   "Informe.bcf"
