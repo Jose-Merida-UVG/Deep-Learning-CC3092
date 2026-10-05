@@ -19,7 +19,7 @@ La IA se usó para **implementar la mayoría del código del laboratorio** y par
 | Task 1.1 | Descarga de `tiny_shakespeare`, vocabulario de 65 caracteres, codificación, partición 90/10 en orden temporal, `get_batch` (objetivo = entrada desplazada un paso). |
 | Mini-GPT | Port del `MiniGPT` de la Semana 6 (atención causal multi-cabeza, LayerNorm, FFN, embeddings posicionales). |
 | Task 1.2 | Ciclo de entrenamiento y curvas de pérdida. |
-| Task 3 | Extracción de embeddings de `bert-base-multilingual-cased. |
+| Task 3 | Extracción de embeddings de `bert-base-multilingual-cased` y carga de modelos. |
 
 
 
