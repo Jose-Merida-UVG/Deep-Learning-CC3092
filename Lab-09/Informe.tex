@@ -124,7 +124,7 @@ $\beta$ & recon (val) & KL nats (val) & KL bits (val) \\
 
 Al subir $\beta$ la reconstrucción empeora y el KL baja: recon 19.8 $\rightarrow$ 21.2 $\rightarrow$ 36.8 y KL 8.28 $\rightarrow$ 5.31 $\rightarrow$ 1.70 nats (11.9 $\rightarrow$ 7.7 $\rightarrow$ 2.5 bits) para $\beta$ = 0.1, 1, 10. Con $\beta$ pequeño el modelo prioriza reconstruir y se aleja del prior; con $\beta$ grande el término KL domina y el código latente transmite menos información.
 
-Para $\beta$ = 0.1 y $\beta$ = 1 el KL (11.9 y 7.7 bits) supera $\log_2 10 \approx 3.32$ bits, así que hay capacidad de sobra para codificar la clase. Para $\beta$ = 10 el KL es 2.45 bits $<$ 3.32, el código no alcanza para identificar la clase de una imagen de forma fiable y además esos bits deben describir también la forma y el estilo. Esto coincide con el diagrama de dispersión de $\beta$ = 10: las clases de forma muy distinta (Trouser, Bag, Ankle boot, Sneaker/Sandal) ocupan regiones propias, pero T-shirt, Pullover, Coat, Shirt y Dress se superponen en una sola zona. Es decir, el código distingue solo $\sim$5--6 grupos ($2^{2.45} \approx 5.5$) en lugar de 10 clases
+Para $\beta$ = 0.1 y $\beta$ = 1 el KL (11.9 y 7.7 bits) supera $\log_2 10 \approx 3.32$ bits, así que hay capacidad de sobra para codificar la clase. Para $\beta$ = 10 el KL es 2.45 bits $<$ 3.32, el código no alcanza para identificar la clase de una imagen de forma fiable y además esos bits deben describir también la forma y el estilo. Esto coincide con el diagrama de dispersión de $\beta$ = 10: las clases de forma muy distinta (Trouser, Bag, Ankle boot, Sneaker/Sandal) ocupan regiones propias, pero T-shirt, Pullover, Coat, Shirt y Dress se superponen en una sola zona. Es decir, el código distingue solo $\sim$5--6 grupos ($2^{2.45} \approx 5.5$) en lugar de 10 clases.
 
 \subsubsection*{(b) KL por Monte Carlo vs.\ KL cerrada}
 KL por Monte Carlo ($10^5$ muestras de $q(z|x)$, promedio de $\log q(z)-\log p(z)$) vs.\ KL cerrada, $\beta=1$, una imagen de validación.
@@ -151,7 +151,7 @@ Esto confirma que la fórmula cerrada
 está bien implementada.
 
 \subsubsection*{(c) Región del espacio latente no reconocible; punto medio de las interpolaciones}
-Con $\beta=1$ las imágenes de las esquinas de la cuadrícula siguen siendo reconocibles. Los zapatos a la izquierda, pantalones abajo a la izquierda y prendas de manga larga a la derecha. La región no reconocible está cerca del origen, en la frontera entre las zonas de zapato (Sneaker/Ankle boot), pantalón y prendas superiores (aprox. $z_1\in[-1,0]$, $z_2\in[-1,0.5]$). Ahí el decoder produce imágenes oscuras y tenues, sin forma de ninguna clase.
+Con $\beta=1$ las imágenes de las esquinas de la cuadrícula siguen siendo reconocibles. Bolsos arriba a la izquierda, zapatos en el centro-izquierda, pantalones abajo a la izquierda y prendas superiores a la derecha. La región no reconocible está cerca del origen, en la frontera entre las zonas de zapato (Sneaker/Ankle boot), pantalón y prendas superiores (aprox. $z_1\in[-1,0]$, $z_2\in[-1,0.5]$). Ahí el decoder produce imágenes oscuras y tenues, sin forma de ninguna clase.
 
 El término KL empuja los posteriores $q(z|x)$ hacia $\mathcal N(0,I)$, de modo que las clases quedan juntas y solapadas alrededor del origen. En una frontera, el mismo $z$ puede venir de imágenes de clases distintas y como la pérdida es un error cuadrático, el decoder aprende a producir el promedio de ellas. Con $\beta$ más grande el overlap sería mayor y más zonas se verían así; con $\beta$ pequeño habría huecos con menos datos donde el decoder se entrena poco.
 
@@ -207,7 +207,7 @@ $|\text{var}_{\text{emp}}-\text{var}_{\text{teo}}|$ medio & 0.00936 \\
 \[\text{SE}=\sqrt{0.60358/5000}=0.011.\]
 El error máximo observado es $0.0335\approx3\,\text{SE}$. Como es el máximo sobre 784 píxeles, eso es lo esperado: el máximo de 784 normales suele estar cerca de $3.2\,\text{SE}$.
 
-La varianza también coincide: $0.60376$ empírica frente a $0.60358$ teórica, con un error medio de $\approx0.8\,\text{SE}$, que es justo lo esperado.
+La varianza también coincide: $0.60376$ empírica frente a $0.60358$ teórica, con un error medio por píxel de $0.0094$. El error estándar de una varianza muestral es $(1-\bar\alpha_{300})\sqrt{2/(N-1)}\approx0.012$, así que el error medio es $\approx0.8$ veces ese SE, justo lo esperado ($\mathbb E|Z|\approx0.8$ para $Z\sim\mathcal N(0,1)$).
 
 \subsection*{Task 2.3 --- Visualización y SNR}
 
@@ -273,16 +273,16 @@ Coseno & 880 & 64 & 56 \\
 \end{table}
 
 \begin{itemize}
-  \item \textbf{SNR $<0.01$:} $x_t\approx\epsilon$, así que predecir $\epsilon$ es trivial y aporta poco gradiente.
-  \item \textbf{SNR $>100$:} $x_t\approx x_0$, así que aislar el ruido es muy difícil (es el intervalo con mayor MSE en la Task 3.2). Son pocos pasos.
+  \item \textbf{SNR $<0.01$:} $x_t\approx\epsilon$, así que predecir $\epsilon$ es trivial y aporta poco gradiente. Con $t$ uniforme, en el lineal son el 33\% de los sorteos, casi desperdiciados.
+  \item \textbf{SNR $>100$:} $x_t\approx x_0$, así que aislar el ruido es muy difícil (es el intervalo con mayor MSE en la Task 3.2). Son pocos pasos (27 en el lineal, 2.7\% de los sorteos), así que su aporte total al entrenamiento es pequeño.
   \item \textbf{SNR $\in[0.01,100]$:} señal y ruido son comparables, y la tarea es informativa.
 \end{itemize}
 
 El coseno es más eficiente: el 88\% de sus pasos están en el rango útil, frente al 65\% del lineal, y desperdicia muchos menos en ruido puro (64 frente a 326).
 
 \subsubsection*{(c) $\mathrm{Var}(x_t)=\bar\alpha_t\mathrm{Var}(x_0)+(1-\bar\alpha_t)$}
-Como $\epsilon$ es independiente de $x_0$ y $\mathrm{Var}(\epsilon)=1$:
-\[\mathrm{Var}(x_t)=\bar\alpha_t\,\mathrm{Var}(x_0)+(1-\bar\alpha_t).\]
+Como $x_t=\sqrt{\bar\alpha_t}\,x_0+\sqrt{1-\bar\alpha_t}\,\epsilon$, con $\epsilon$ independiente de $x_0$ (covarianza nula) y $\mathrm{Var}(\epsilon)=1$:
+\[\mathrm{Var}(x_t)=\bar\alpha_t\,\mathrm{Var}(x_0)+(1-\bar\alpha_t)\,\mathrm{Var}(\epsilon)+2\sqrt{\bar\alpha_t(1-\bar\alpha_t)}\,\mathrm{Cov}(x_0,\epsilon)=\bar\alpha_t\,\mathrm{Var}(x_0)+(1-\bar\alpha_t).\]
 Verificación con $\mathrm{Var}(x_0)=0.49826$:
 \begin{table}[H]
 \centering
@@ -403,7 +403,7 @@ $w$ & fidelidad & diversidad & s / 100 imgs \\
 
 \textbf{Clase más afectada: Bag}, cuya diversidad cae de 10.575 ($w=1$) a 5.208 ($w=7$), $-50.8\%$. Le siguen Coat (8.771 $\rightarrow$ 5.175, $-41.0\%$), Shirt ($-26.0\%$) y Trouser ($-20.5\%$).
 
-\textbf{Hipótesis (respaldada por los datos).} Bag es la clase con mayor diversidad real (11.320, la más alta de las 10): sus imágenes varían muchísimo (formas, asas, patrones), así que tiene más diversidad que perder. La guía empuja hacia lo que el modelo considera más típico de la clase; en una clase tan heterogénea eso colapsa a unos pocos prototipos (la bolsa rectangular clara), y por eso cae más.
+\textbf{Hipótesis (respaldada por los datos).} Bag es la clase con mayor diversidad real (11.320, la más alta de las 10): sus imágenes varían muchísimo (formas, asas, patrones), así que tiene más diversidad que perder. La guía empuja hacia lo que el modelo considera más típico de la clase; en una clase tan heterogénea eso colapsa a unos pocos prototipos, y por eso cae más: con $w=7$ su diversidad (5.208) queda en menos de la mitad de la real (11.320).
 
 \textbf{Matiz sobre la métrica.} Algunas clases suben (T-shirt +54\%, Sandal +79\%, Sneaker +11\%). Con $w=7$ las imágenes salen saturadas y de mayor contraste, y la distancia euclidiana en píxeles crece con la intensidad, así que la métrica puede subir aunque la variedad de formas baje. Sneaker es el caso más claro: en la figura, con $w=7$ las 10 muestras son casi la misma zapatilla de alto contraste, pero su diversidad medida sube de 6.066 a 6.707. Es una limitación de usar distancia en píxeles como medida de diversidad.
 
@@ -422,7 +422,7 @@ La exactitud global con $w=1$ es $392/500=0.784$ (suma de la diagonal). El par m
 
 \textbf{¿Defecto del generador, del clasificador o de las clases?} Principalmente de las propias clases, con una contribución del generador:
 \begin{itemize}
-  \item \textbf{Clases:} Shirt, Pullover, Coat y T-shirt son prendas de torso con manga larga muy parecidas. En las imágenes, las filas generadas de Shirt y Pullover son casi indistinguibles (mangas largas, cuerpo oscuro con textura), y lo mismo pasa con Ankle boot y Sneaker (calzado de perfil similar). Las confusiones ocurren justo entre grupos visualmente parecidos.
+  \item \textbf{Clases:} Shirt, Pullover y Coat son prendas de torso con manga larga muy parecidas (y T-shirt comparte la misma silueta de torso). En las imágenes, las filas generadas de Shirt y Pullover son casi indistinguibles (mangas largas, cuerpo oscuro con textura), y lo mismo pasa con Ankle boot y Sneaker (calzado de perfil similar). Las confusiones ocurren justo entre grupos visualmente parecidos.
   \item \textbf{Generador:} con $w=1$ varias muestras salen ruidosas, de bajo contraste o con textura rara (se ve en la cuadrícula de la Task 3.3, p.\ ej.\ las filas de T-shirt y Dress), y esas muestras ambiguas son las que el clasificador confunde. La fidelidad sube a 0.952 con $w=3$, es decir, parte del error es del condicionamiento débil de $w=1$.
   \item \textbf{Clasificador:} su exactitud en validación es 0.8874, apenas sobre el 88\% pedido, así que también se equivoca. No calculé su matriz de confusión sobre datos reales; para confirmar que sus errores caen en los mismos pares habría que hacerlo.
 \end{itemize}
