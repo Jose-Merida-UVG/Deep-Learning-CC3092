@@ -1,0 +1,9 @@
+torch
+torchvision
+numpy
+matplotlib
+scipy
+pandas
+jupyter
+ipykernel
+nbformat
