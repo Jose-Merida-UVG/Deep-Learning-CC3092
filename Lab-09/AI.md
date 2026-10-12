@@ -9,7 +9,7 @@ Se utilizó Claude Code (Anthropic) desde la terminal sobre el repositorio del l
 | Scaffolding | Estructura del notebook con encabezados por sub-tarea, carga de datos, ciclos de entrenamiento/evaluación, figuras y tablas. Las funciones core quedaron como `# TODO (core)`. |
 | Funciones core | Implementé la lógica principal (Tasks 1, 2 y 4). **Solo la Task 2.4** (segundo calendario, incluida su descripción) **y la Task 3.1** (U-Net condicional) fueron implementadas por la IA. Las revisé contra el PDF y los outputs del notebook. |
 | Redacción | Formato de Markdown y LaTeX de las respuestas analíticas y demostraciones (redactadas previamente por mí). |
-| Revisión | Encabezados de Pregunta/Respuesta en el notebook, versión más concisa de las respuestas de la Task 4, corrección de dos inconsistencias en la Task 3.5 y contraste del notebook contra el PDF del laboratorio. |
+| Revisión | Encabezados de Pregunta/Respuesta en el notebook, corrección de dos inconsistencias en la Task 3.5 y contraste del notebook contra el PDF del laboratorio. |
 | Informe | Generación de `Informe.tex` a partir de la plantilla del repositorio, transcribiendo las respuestas del notebook. |
 
 ## Scaffolding del notebook
